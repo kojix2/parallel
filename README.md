@@ -30,10 +30,6 @@ require "parallel"
 [1, 2, 3, 4].par_map { |x| x * 2 }
 # => [2, 4, 6, 8]
 
-# Parallel sum
-(1..100).par_sum { |x| x }
-# => 5050
-
 # Parallel each
 [1, 2, 3, 4].par_each { |x| puts x }
 
@@ -54,10 +50,6 @@ crystal spec -Dpreview_mt -Dexecution_context
 - par_map(execution_context = nil, &block)
 
   - Applies block to each element in parallel, returns array of results.
-
-- par_sum(execution_context = nil, &block)
-
-  - Applies block to each element in parallel, returns sum of results.
 
 - par_each(execution_context = nil, &block)
   - Applies block to each element in parallel for side effects.

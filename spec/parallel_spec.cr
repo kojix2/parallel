@@ -59,44 +59,6 @@ describe Parallel do
     end
   end
 
-  describe "par_sum" do
-    it "works with Array" do
-      result = [1, 2, 3, 4].par_sum { |x| x }
-      result.should eq(10)
-    end
-
-    it "works with Range" do
-      result = (1..10).par_sum { |x| x }
-      result.should eq(55)
-    end
-
-    it "works with transformations" do
-      result = [1, 2, 3, 4].par_sum { |x| x * 2 }
-      result.should eq(20)
-    end
-
-    it "handles empty collections" do
-      result = ([] of Int32).par_sum { |x| x }
-      result.should eq(0)
-    end
-
-    it "works with floats" do
-      result = [1.5, 2.5, 3.5].par_sum { |x| x }
-      result.should eq(7.5)
-    end
-
-    it "propagates exceptions" do
-      expect_raises(Exception, "sum error") do
-        [1, 2, 3].par_sum do |x|
-          if x == 2
-            raise "sum error"
-          end
-          x
-        end
-      end
-    end
-  end
-
   describe "par_each" do
     it "executes block for each element" do
       results = [] of Int32
@@ -172,11 +134,11 @@ describe Parallel do
     it "works with I/O operations" do
       # Simulate I/O with sleep
       start_time = Time.monotonic
-      
+
       [1, 2, 3, 4].par_each do |x|
-        sleep(0.01.seconds)  # 10ms per operation
+        sleep(0.01.seconds) # 10ms per operation
       end
-      
+
       elapsed = Time.monotonic - start_time
       # Should be faster than sequential (4 * 10ms = 40ms)
       # Allow generous margin for CI environments

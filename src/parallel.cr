@@ -1,16 +1,15 @@
 # Parallel processing library for Crystal using Fiber::ExecutionContext
 #
-# This library extends Enumerable and Indexable with parallel processing methods
-# like par_map, par_sum, etc. It requires Crystal 1.6.0+ and the following flags:
+# This library extends Enumerable and Indexable with parallel processing methods.
+# It requires Crystal 1.6.0+ and the following flags:
 # -Dpreview_mt -Dexecution_context
 #
 # Example:
 # ```
 # [1, 2, 3, 4].par_map { |x| x * 2 } # => [2, 4, 6, 8]
-# (1..10).par_sum { |x| x }          # => 55
 # ```
 module Parallel
-  VERSION = "0.1.0"
+  VERSION = {{ `shards version #{__DIR__}`.chomp.stringify }}
 
   # Global ExecutionContext for parallel processing
   # Reusing a single context is recommended for performance
@@ -56,16 +55,6 @@ module Enumerable(T)
 
     # Sort by index and extract values
     temp_results.sort_by(&.[0]).map(&.[1])
-  end
-
-  # Parallel sum operation
-  # Applies the given block to each element in parallel and returns the sum
-  #
-  # ```
-  # (1..10).par_sum { |x| x } # => 55
-  # ```
-  def par_sum(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, &block : T -> N) forall N
-    par_map(execution_context, &block).sum
   end
 
   # Parallel each operation
@@ -133,11 +122,6 @@ module Indexable(T)
 
     # Sort by index and extract values to maintain order
     temp_results.sort_by(&.[0]).map(&.[1])
-  end
-
-  # Optimized parallel sum for indexable collections
-  def par_sum(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, &block : T -> N) forall N
-    par_map(execution_context, &block).sum
   end
 
   # Optimized parallel each for indexable collections

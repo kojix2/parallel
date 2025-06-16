@@ -17,14 +17,6 @@ puts "Input: (1..10)"
 puts "par_map { |x| x * 2 } => #{result}"
 puts
 
-# par_sum example
-puts "3. par_sum example:"
-sum = (1..100).par_sum { |x| x }
-puts "Input: (1..100)"
-puts "par_sum { |x| x } => #{sum}"
-puts "Expected: #{(1..100).sum} ✓"
-puts
-
 # par_each example with side effects
 puts "4. par_each with side effects:"
 results = [] of String
