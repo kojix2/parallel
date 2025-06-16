@@ -1,0 +1,9 @@
+name: parallel
+version: 0.1.0
+
+authors:
+  - kojix2 <2xijok@gmail.com>
+
+crystal: '>= 1.16.3'
+
+license: MIT
