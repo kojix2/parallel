@@ -34,6 +34,10 @@ require "parallel"
 # Parallel each
 [1, 2, 3, 4].par_each { |x| puts x }
 
+# Chunk processing (fewer context switches)
+[1, 2, 3, 4].par_map(chunk: 2) { |x| x * 2 }
+# => [2, 4, 6, 8] (same result, better performance)
+
 # Custom ExecutionContext
 context = Fiber::ExecutionContext::MultiThreaded.new("workers", 8)
 [1, 2, 3, 4].par_map(context) { |x| x * 2 }
@@ -48,12 +52,14 @@ crystal spec -Dpreview_mt -Dexecution_context
 
 ## Methods
 
-- par_map(execution_context = nil, &block)
+- par_map(execution_context = nil, *, chunk = nil, &block)
 
   - Applies block to each element in parallel, returns array of results.
+  - `chunk`: Process elements in chunks to reduce context switches.
 
-- par_each(execution_context = nil, &block)
+- par_each(execution_context = nil, *, chunk = nil, &block)
   - Applies block to each element in parallel for side effects.
+  - `chunk`: Process elements in chunks to reduce context switches.
 
 ## Notes
 

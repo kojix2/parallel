@@ -94,4 +94,22 @@ puts "First 10 results: #{result[0..9]}"
 puts "Time: #{elapsed.total_milliseconds.round(2)}ms"
 puts
 
+# Chunk processing test
+puts "9. Chunk processing (fewer context switches):"
+puts "Normal processing:"
+start_time = Time.monotonic
+normal_result = (1..100).par_map { |x| x * x }
+normal_time = Time.monotonic - start_time
+
+puts "Chunk processing (chunk: 10):"
+start_time = Time.monotonic
+chunk_result = (1..100).par_map(chunk: 10) { |x| x * x }
+chunk_time = Time.monotonic - start_time
+
+puts "Normal result == Chunk result: #{normal_result == chunk_result}"
+puts "Normal time: #{normal_time.total_milliseconds.round(2)}ms"
+puts "Chunk time: #{chunk_time.total_milliseconds.round(2)}ms"
+puts "Results are identical: #{normal_result == chunk_result}"
+puts
+
 puts "=== Demo completed successfully! ==="
