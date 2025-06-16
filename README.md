@@ -1,5 +1,7 @@
 # Parallel
 
+[![test](https://github.com/kojix2/parallel/actions/workflows/test.yml/badge.svg)](https://github.com/kojix2/parallel/actions/workflows/test.yml)
+
 Crystal library for parallel processing using Fiber::ExecutionContext.
 
 ## Requirements
@@ -14,7 +16,7 @@ Add to `shard.yml`:
 ```yaml
 dependencies:
   parallel:
-    github: your-username/parallel
+    github: kojix2/parallel
 ```
 
 Run `shards install`
@@ -40,19 +42,25 @@ context = Fiber::ExecutionContext::MultiThreaded.new("workers", 8)
 [1, 2, 3, 4].par_map(context) { |x| x * 2 }
 ```
 
+### Compilation
+
+```bash
+crystal build -Dpreview_mt -Dexecution_context your_app.cr
+crystal spec -Dpreview_mt -Dexecution_context
+```
+
 ## Methods
 
-### par_map(execution_context = nil, &block)
+- par_map(execution_context = nil, &block)
 
-Applies block to each element in parallel, returns array of results.
+  - Applies block to each element in parallel, returns array of results.
 
-### par_sum(execution_context = nil, &block)
+- par_sum(execution_context = nil, &block)
 
-Applies block to each element in parallel, returns sum of results.
+  - Applies block to each element in parallel, returns sum of results.
 
-### par_each(execution_context = nil, &block)
-
-Applies block to each element in parallel for side effects.
+- par_each(execution_context = nil, &block)
+  - Applies block to each element in parallel for side effects.
 
 ## Notes
 
@@ -61,23 +69,6 @@ Applies block to each element in parallel for side effects.
 - Exceptions are propagated from parallel tasks
 - Uses global ExecutionContext by default for performance
 - Thread safety is your responsibility when accessing shared resources
-
-## Example
-
-```crystal
-# Performance comparison
-puts "Sequential:"
-time = Time.measure do
-  [1, 2, 3, 4].map { |x| sleep(0.1); x * 2 }
-end
-puts time.total_milliseconds # ~400ms
-
-puts "Parallel:"
-time = Time.measure do
-  [1, 2, 3, 4].par_map { |x| sleep(0.1); x * 2 }
-end
-puts time.total_milliseconds # ~100ms
-```
 
 ## Compilation
 
