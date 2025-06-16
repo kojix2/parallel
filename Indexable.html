@@ -143,7 +143,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/d200f42329937b655146a395d6bd45463be8ff05/src/parallel.cr#L95" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L161" target="_blank">
         parallel.cr
       </a>
     
@@ -172,14 +172,14 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> _)</a>
+        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
         
           <div class="summary"><p>Optimized parallel each for indexable collections</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
+        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
         
           <div class="summary"><p>Optimized parallel map for indexable collections Uses unsafe_fetch for better performance and guarantees order preservation</p></div>
         
@@ -196,13 +196,13 @@
   <h3>Instance methods inherited from module <code><a href="Enumerable.html">Enumerable(T)</a></code></h3>
   
   
-    <a href="Enumerable.html#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="tooltip">
-      <span>par_each(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> _)</span>
+    <a href="Enumerable.html#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="tooltip">
+      <span>par_each(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</span>
     par_each</a>, 
     
   
-    <a href="Enumerable.html#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="tooltip">
-      <span>par_map(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> U) forall U</span>
+    <a href="Enumerable.html#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="tooltip">
+      <span>par_map(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</span>
     par_map</a>
     
   
@@ -249,45 +249,49 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,&amp;block:T-&gt;_)-instance-method">
+    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;_)-instance-method">
       <div class="signature">
         
-        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> _)
+        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)
 
-        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
+        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>Optimized parallel each for indexable collections</p>
+<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>].par_each { <span class="o">|</span>x<span class="o">|</span> puts x }
+[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_each(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> puts x } <span class="c"># same result, fewer context switches</span></code></pre>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/d200f42329937b655146a395d6bd45463be8ff05/src/parallel.cr#L128" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L227" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
+    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
       <div class="signature">
         
-        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, &block : T -> U) forall U
+        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U
 
-        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
+        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>Optimized parallel map for indexable collections
 Uses unsafe_fetch for better performance and guarantees order preservation</p>
+<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8]</span>
+[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8] (same result, fewer context switches)</span></code></pre>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/d200f42329937b655146a395d6bd45463be8ff05/src/parallel.cr#L98" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L169" target="_blank">View source</a>]
         
       </div>
     </div>

@@ -132,7 +132,7 @@ It requires Crystal 1.6.0+ and the following flags:
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/d200f42329937b655146a395d6bd45463be8ff05/src/parallel.cr#L11" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L11" target="_blank">
         parallel.cr
       </a>
     
@@ -175,6 +175,32 @@ Reusing a single context is recommended for performance</p>
   
 
   
+  <h2>
+    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#adaptive_chunk_size%28collection_size%3AInt32%29%3AInt32-class-method" class="signature"><strong>.adaptive_chunk_size</strong>(collection_size : Int32) : Int32</a>
+        
+          <div class="summary"><p>Determines optimal chunk size for adaptive chunking</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#handle_each_errors%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29-class-method" class="signature"><strong>.handle_each_errors</strong>(errors_channel, completed_channel, expected_count : Int32)</a>
+        
+          <div class="summary"><p>Handles parallel each operation error collection</p></div>
+        
+      </li>
+    
+  </ul>
+
 
   
 
@@ -188,6 +214,58 @@ Reusing a single context is recommended for performance</p>
   
 
   
+  <h2>
+    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="adaptive_chunk_size(collection_size:Int32):Int32-class-method">
+      <div class="signature">
+        
+        def self.<strong>adaptive_chunk_size</strong>(collection_size : Int32) : Int32
+
+        <a class="method-permalink" href="#adaptive_chunk_size%28collection_size%3AInt32%29%3AInt32-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Determines optimal chunk size for adaptive chunking</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L22" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="handle_each_errors(errors_channel,completed_channel,expected_count:Int32)-class-method">
+      <div class="signature">
+        
+        def self.<strong>handle_each_errors</strong>(errors_channel, completed_channel, expected_count : Int32)
+
+        <a class="method-permalink" href="#handle_each_errors%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Handles parallel each operation error collection</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L33" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
   
 
