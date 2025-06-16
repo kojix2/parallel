@@ -115,10 +115,6 @@
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }
 <span class="c"># =&gt; [2, 4, 6, 8]</span>
 
-<span class="c"># Parallel sum</span>
-(<span class="n">1</span>..<span class="n">100</span>).par_sum { <span class="o">|</span>x<span class="o">|</span> x }
-<span class="c"># =&gt; 5050</span>
-
 <span class="c"># Parallel each</span>
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_each { <span class="o">|</span>x<span class="o">|</span> puts x }
 
@@ -142,12 +138,6 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <p>par_map(execution_context = nil, &amp;block)</p>
 <ul>
 <li>Applies block to each element in parallel, returns array of results.</li>
-</ul>
-</li>
-<li>
-<p>par_sum(execution_context = nil, &amp;block)</p>
-<ul>
-<li>Applies block to each element in parallel, returns sum of results.</li>
 </ul>
 </li>
 <li>

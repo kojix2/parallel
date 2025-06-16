@@ -101,12 +101,11 @@
   </h2>
 
   <p>Parallel processing library for Crystal using Fiber::ExecutionContext</p>
-<p>This library extends Enumerable and Indexable with parallel processing methods
-like par_map, par_sum, etc. It requires Crystal 1.6.0+ and the following flags:
+<p>This library extends Enumerable and Indexable with parallel processing methods.
+It requires Crystal 1.6.0+ and the following flags:
 -Dpreview_mt -Dexecution_context</p>
 <p>Example:</p>
-<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8]</span>
-(<span class="n">1</span>..<span class="n">10</span>).par_sum { <span class="o">|</span>x<span class="o">|</span> x }          <span class="c"># =&gt; 55</span></code></pre>
+<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8]</span></code></pre>
 
 
 
@@ -133,7 +132,7 @@ like par_map, par_sum, etc. It requires Crystal 1.6.0+ and the following flags:
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/200ea45442591a80943dc4b151f5ac9aea6fea1b/src/parallel.cr#L12" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/6440f5330e15cd213e1d66643d0e24eb1b54832d/src/parallel.cr#L11" target="_blank">
         parallel.cr
       </a>
     
@@ -165,7 +164,7 @@ Reusing a single context is recommended for performance</p>
       
     
       <dt class="entry-const" id="VERSION">
-        <strong>VERSION</strong> = <code><span class="s">&quot;0.1.0&quot;</span></code>
+        <strong>VERSION</strong> = <code><span class="o">{{</span> (<span class="s">`shards version /home/runner/work/parallel/parallel/src`</span>).chomp.stringify }}</code>
       </dt>
       
     
