@@ -83,6 +83,7 @@
     <use href="#octicon-link"/>
   </svg>
 </a>Parallel</h1>
+<p><a href="https://github.com/kojix2/parallel/actions/workflows/test.yml"><img src="https://github.com/kojix2/parallel/actions/workflows/test.yml/badge.svg" alt="test" /></a></p>
 <p>Crystal library for parallel processing using Fiber::ExecutionContext.</p>
 <h2><a id="requirements" class="anchor" href="#requirements">
   <svg class="octicon-link" aria-hidden="true">
@@ -101,7 +102,7 @@
 <p>Add to <code>shard.yml</code>:</p>
 <pre><code class="language-yaml">dependencies:
   parallel:
-    github: your-username/parallel</code></pre>
+    github: kojix2/parallel</code></pre>
 <p>Run <code>shards install</code></p>
 <h2><a id="usage" class="anchor" href="#usage">
   <svg class="octicon-link" aria-hidden="true">
@@ -124,29 +125,38 @@
 <span class="c"># Custom ExecutionContext</span>
 context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">MultiThreaded</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
+<h3><a id="compilation" class="anchor" href="#compilation">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Compilation</h3>
+<pre><code class="language-bash">crystal build -Dpreview_mt -Dexecution_context your_app.cr
+crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <h2><a id="methods" class="anchor" href="#methods">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>Methods</h2>
-<h3><a id="par-mapexecution-context-nil-block" class="anchor" href="#par-mapexecution-context-nil-block">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>par_map(execution_context = nil, &amp;block)</h3>
-<p>Applies block to each element in parallel, returns array of results.</p>
-<h3><a id="par-sumexecution-context-nil-block" class="anchor" href="#par-sumexecution-context-nil-block">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>par_sum(execution_context = nil, &amp;block)</h3>
-<p>Applies block to each element in parallel, returns sum of results.</p>
-<h3><a id="par-eachexecution-context-nil-block" class="anchor" href="#par-eachexecution-context-nil-block">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>par_each(execution_context = nil, &amp;block)</h3>
-<p>Applies block to each element in parallel for side effects.</p>
+<ul>
+<li>
+<p>par_map(execution_context = nil, &amp;block)</p>
+<ul>
+<li>Applies block to each element in parallel, returns array of results.</li>
+</ul>
+</li>
+<li>
+<p>par_sum(execution_context = nil, &amp;block)</p>
+<ul>
+<li>Applies block to each element in parallel, returns sum of results.</li>
+</ul>
+</li>
+<li>
+<p>par_each(execution_context = nil, &amp;block)</p>
+<ul>
+<li>Applies block to each element in parallel for side effects.</li>
+</ul>
+</li>
+</ul>
 <h2><a id="notes" class="anchor" href="#notes">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
@@ -159,24 +169,7 @@ context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::<
 <li>Uses global ExecutionContext by default for performance</li>
 <li>Thread safety is your responsibility when accessing shared resources</li>
 </ul>
-<h2><a id="example" class="anchor" href="#example">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>Example</h2>
-<pre><code class="language-crystal"><span class="c"># Performance comparison</span>
-puts <span class="s">&quot;Sequential:&quot;</span>
-time <span class="o">=</span> <span class="t">Time</span>.measure <span class="k">do</span>
-  [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].map { <span class="o">|</span>x<span class="o">|</span> sleep(<span class="n">0.1</span>); x <span class="o">*</span> <span class="n">2</span> }
-<span class="k">end</span>
-puts time.total_milliseconds <span class="c"># ~400ms</span>
-
-puts <span class="s">&quot;Parallel:&quot;</span>
-time <span class="o">=</span> <span class="t">Time</span>.measure <span class="k">do</span>
-  [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> sleep(<span class="n">0.1</span>); x <span class="o">*</span> <span class="n">2</span> }
-<span class="k">end</span>
-puts time.total_milliseconds <span class="c"># ~100ms</span></code></pre>
-<h2><a id="compilation" class="anchor" href="#compilation">
+<h2><a id="compilation-1" class="anchor" href="#compilation-1">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
