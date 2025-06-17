@@ -151,7 +151,7 @@ describe Parallel do
       input = (1..20).to_a
       normal_result = input.par_map { |x| x * 2 }
       chunk_result = input.par_map(chunk: 5) { |x| x * 2 }
-      
+
       chunk_result.should eq(normal_result)
       chunk_result.should eq(input.map { |x| x * 2 })
     end
@@ -227,7 +227,7 @@ describe Parallel do
       input = (1..100).to_a
       auto_result = input.par_map { |x| x * 2 }
       manual_result = input.par_map(chunk: 25) { |x| x * 2 }
-      
+
       auto_result.should eq(manual_result)
       auto_result.should eq(input.map { |x| x * 2 })
     end
