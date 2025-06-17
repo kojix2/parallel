@@ -130,65 +130,89 @@ module Parallel
   # Common parallel map implementation for Enumerable collections using lazy evaluation
   # This method handles the core logic for Enumerable versions without creating intermediate arrays
   def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
-    # Use iterator for lazy evaluation to avoid creating intermediate arrays
-    items_with_index = [] of Tuple(T, Int32)
-    enumerable.each_with_index do |item, index|
-      items_with_index << {item, index}
-    end
-
-    return [] of U if items_with_index.empty?
-
     results = Channel(Tuple(Int32, U) | Exception).new
-    collection_size = items_with_index.size
+    completed = Channel(Nil).new
 
-    if chunk_size > 1 && collection_size > chunk_size
-      # Chunk processing mode
-      chunks = items_with_index.each_slice(chunk_size).with_index.to_a
+    # Use a mutex to synchronize iterator access
+    mutex = Mutex.new
+    iterator = enumerable.each_with_index
+    finished = false
 
-      chunks.each do |chunk_items, chunk_idx|
-        context.spawn do
-          chunk_items.each_with_index do |item_with_index, item_idx|
-            item, original_index = item_with_index
+    # Spawn worker fibers
+    worker_count = Fiber::ExecutionContext.default_workers_count
+    worker_count.times do |worker_id|
+      context.spawn do
+        loop do
+          items_with_index = [] of Tuple(T, Int32)
+
+          # Get a chunk of items safely
+          mutex.synchronize do
+            break if finished
+
+            chunk_size.times do
+              begin
+                item_with_index = iterator.next
+                if item_with_index.is_a?(Iterator::Stop)
+                  finished = true
+                  break
+                end
+                items_with_index << item_with_index
+              rescue ex
+                finished = true
+                results.send(ex)
+                break
+              end
+            end
+          end
+
+          break if items_with_index.empty?
+
+          # Process the chunk
+          items_with_index.each do |item, index|
             begin
               result = block.call(item)
-              results.send({original_index, result})
+              results.send({index, result})
             rescue ex
               results.send(ex)
-              log_fiber_exception(ex, "chunk #{chunk_idx}, item #{item_idx}")
+              log_fiber_exception(ex, "worker #{worker_id}, item #{index}")
+              break
             end
           end
         end
+
+        completed.send(nil)
       end
-    else
-      # Element-wise processing mode
-      items_with_index.each do |item_with_index|
-        item, index = item_with_index
-        context.spawn do
-          begin
-            result = block.call(item)
-            results.send({index, result})
-          rescue ex
-            results.send(ex)
-            log_fiber_exception(ex, "item #{index}")
-          end
+    end
+
+    # Collect results
+    result_map = Hash(Int32, U).new
+    collected_errors = [] of Exception
+    completed_workers = 0
+
+    loop do
+      select
+      when result = results.receive
+        case result
+        when Tuple(Int32, U)
+          index, value = result
+          result_map[index] = value
+        when Exception
+          collected_errors << result
         end
+      when completed.receive
+        completed_workers += 1
+        break if completed_workers == worker_count
       end
     end
 
-    # Pre-allocate result array and fill directly by index (no sorting needed)
-    result_array = Pointer(U).malloc(collection_size)
-    collection_size.times do
-      case result = results.receive
-      when Tuple(Int32, U)
-        index, value = result
-        result_array[index] = value
-      when Exception
-        raise result
-      end
+
+    # Raise the first error if any occurred
+    unless collected_errors.empty?
+      raise collected_errors.first
     end
 
-    # Convert pointer to array
-    Array(U).new(collection_size) { |i| result_array[i] }
+    # Convert to sorted array by index
+    result_map.to_a.sort_by(&.[0]).map(&.[1])
   end
 
   # Lazy parallel each implementation for Enumerable collections
