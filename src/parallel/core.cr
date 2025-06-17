@@ -129,11 +129,100 @@ module Parallel
 
   # Common parallel map implementation for Enumerable collections using lazy evaluation
   # This method handles the core logic for Enumerable versions without creating intermediate arrays
+  # Uses lock-free work-stealing approach for better performance
   def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+    # Try optimized approaches first, fallback to safe implementation for edge cases
+    if enumerable.responds_to?(:size) && enumerable.size > 0
+      parallel_map_enumerable_workstealing(enumerable, context, chunk_size, &block)
+    else
+      parallel_map_enumerable_safe(enumerable, context, chunk_size, &block)
+    end
+  end
+
+  # Work-stealing optimized implementation for known-size enumerables (map version)
+  private def self.parallel_map_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+    # Convert to array with indices first to ensure consistent iteration
+    items_with_indices = enumerable.each_with_index.to_a
+    return [] of U if items_with_indices.empty?
+
+    # Pre-chunk the items with indices to avoid iterator synchronization
+    tasks_with_indices = items_with_indices.each_slice(chunk_size).to_a
+    worker_count = Fiber::ExecutionContext.default_workers_count
+
+    # Use atomic counter for lock-free task distribution
+    task_index = Atomic(Int32).new(0)
     results = Channel(Tuple(Int32, U) | Exception).new
     completed = Channel(Nil).new
 
-    # Use a mutex to synchronize iterator access
+    # Spawn worker fibers
+    worker_count.times do |worker_id|
+      context.spawn do
+        begin
+          loop do
+            # Atomically get and increment task index
+            current_index = task_index.get(:acquire)
+            # Use compare_and_set for thread-safe increment
+            loop do
+              break if current_index >= tasks_with_indices.size
+              if task_index.compare_and_set(current_index, current_index + 1, :acquire, :acquire)
+                break
+              end
+              current_index = task_index.get(:acquire)
+            end
+
+            break if current_index >= tasks_with_indices.size
+
+            # Process the task chunk
+            tasks_with_indices[current_index].each do |item, original_index|
+              result = block.call(item)
+              results.send({original_index, result})
+            end
+          end
+        rescue ex
+          results.send(ex)
+          log_fiber_exception(ex, "worker #{worker_id}")
+        ensure
+          completed.send(nil)
+        end
+      end
+    end
+
+    # Collect results
+    result_map = Hash(Int32, U).new
+    collected_errors = [] of Exception
+    completed_workers = 0
+
+    loop do
+      select
+      when result = results.receive
+        case result
+        when Tuple(Int32, U)
+          index, value = result
+          result_map[index] = value
+        when Exception
+          collected_errors << result
+        end
+      when completed.receive
+        completed_workers += 1
+        break if completed_workers == worker_count
+      end
+    end
+
+    # Raise the first error if any occurred
+    unless collected_errors.empty?
+      raise collected_errors.first
+    end
+
+    # Convert to sorted array by index
+    result_map.to_a.sort_by(&.[0]).map(&.[1])
+  end
+
+  # Safe fallback implementation for unknown-size enumerables (map version)
+  private def self.parallel_map_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+    results = Channel(Tuple(Int32, U) | Exception).new
+    completed = Channel(Nil).new
+
+    # Use a mutex to synchronize iterator access (fallback for edge cases)
     mutex = Mutex.new
     iterator = enumerable.each_with_index
     finished = false
@@ -205,7 +294,6 @@ module Parallel
       end
     end
 
-
     # Raise the first error if any occurred
     unless collected_errors.empty?
       raise collected_errors.first
@@ -217,11 +305,86 @@ module Parallel
 
   # Lazy parallel each implementation for Enumerable collections
   # This method processes elements without materializing the entire collection
+  # Uses lock-free work-stealing approach for better performance
   def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+    # Try optimized approaches first, fallback to safe implementation for edge cases
+    if enumerable.responds_to?(:size) && enumerable.size > 0
+      parallel_each_enumerable_workstealing(enumerable, context, chunk_size, &block)
+    else
+      parallel_each_enumerable_safe(enumerable, context, chunk_size, &block)
+    end
+  end
+
+  # Work-stealing optimized implementation for known-size enumerables
+  private def self.parallel_each_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+    # Convert to array first to ensure consistent iteration
+    items = enumerable.to_a
+    return if items.empty?
+
+    # Pre-chunk the items to avoid iterator synchronization
+    tasks = items.each_slice(chunk_size).to_a
+    worker_count = Fiber::ExecutionContext.default_workers_count
+
+    # Use atomic counter for lock-free task distribution
+    task_index = Atomic(Int32).new(0)
     errors = Channel(Exception).new
     completed = Channel(Nil).new
 
-    # Use a mutex to synchronize iterator access
+    # Spawn worker fibers
+    worker_count.times do |worker_id|
+      context.spawn do
+        begin
+          loop do
+            # Atomically get and increment task index
+            current_index = task_index.get(:acquire)
+            # Use compare_and_set for thread-safe increment
+            loop do
+              break if current_index >= tasks.size
+              if task_index.compare_and_set(current_index, current_index + 1, :acquire, :acquire)
+                break
+              end
+              current_index = task_index.get(:acquire)
+            end
+
+            break if current_index >= tasks.size
+
+            # Process the task chunk
+            tasks[current_index].each do |item|
+              block.call(item)
+            end
+          end
+        rescue ex
+          errors.send(ex)
+          log_fiber_exception(ex, "worker #{worker_id}")
+        ensure
+          completed.send(nil)
+        end
+      end
+    end
+
+    # Wait for all workers to complete
+    collected_errors = [] of Exception
+    worker_count.times do
+      select
+      when error = errors.receive
+        collected_errors << error
+      when completed.receive
+        # Continue
+      end
+    end
+
+    # Raise the first error if any occurred
+    unless collected_errors.empty?
+      raise collected_errors.first
+    end
+  end
+
+  # Safe fallback implementation for unknown-size enumerables
+  private def self.parallel_each_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+    errors = Channel(Exception).new
+    completed = Channel(Nil).new
+
+    # Use a mutex to synchronize iterator access (fallback for edge cases)
     mutex = Mutex.new
     iterator = enumerable.each
     finished = false
