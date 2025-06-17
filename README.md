@@ -69,12 +69,13 @@ crystal spec -Dpreview_mt -Dexecution_context
 - Uses global ExecutionContext by default for performance
 - Thread safety is your responsibility when accessing shared resources
 
-## Compilation
+## Contributing
 
-```bash
-crystal build src/your_app.cr -Dpreview_mt -Dexecution_context
-crystal spec -Dpreview_mt -Dexecution_context
-```
+- Fork this repository
+- Report bugs
+- Fix bugs and submit pull requests
+- Write, clarify, or fix documentation
+- Suggest or add new features
 
 ## License
 
