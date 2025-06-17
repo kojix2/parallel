@@ -14,16 +14,10 @@ module Enumerable(T)
   def par_map(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
     context = execution_context || Parallel::PARALLEL_CONTEXT
 
-    # Check if empty without materializing the entire collection
-    empty = true
-    self.each do |_|
-      empty = false
-      break
-    end
-    return [] of U if empty
+    # Unified empty check
+    is_empty, estimated_size = Parallel.check_empty_and_size(self)
+    return [] of U if is_empty
 
-    # Determine chunk size based on estimated size (if available) or use default
-    estimated_size = responds_to?(:size) ? size : 100 # fallback for unknown size
     chunk_size = chunk || Parallel.adaptive_chunk_size(estimated_size)
 
     Parallel.parallel_map_enumerable(self, context, chunk_size, &block)
@@ -39,13 +33,14 @@ module Enumerable(T)
   # ```
   def par_each(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> _)
     context = execution_context || Parallel::PARALLEL_CONTEXT
-    items = self.to_a
-    return if items.empty?
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(items.size)
+    # Unified empty check
+    is_empty, estimated_size = Parallel.check_empty_and_size(self)
+    return if is_empty
 
-    Parallel.parallel_each(items.size, context, chunk_size) do |index|
-      block.call(items[index])
-    end
+    chunk_size = chunk || Parallel.adaptive_chunk_size(estimated_size)
+
+    # Use lazy evaluation to avoid materializing the entire collection
+    Parallel.parallel_each_enumerable(self, context, chunk_size, &block)
   end
 end

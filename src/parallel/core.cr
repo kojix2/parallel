@@ -50,6 +50,23 @@ module Parallel
     end
   end
 
+  # Unified empty check for collections
+  # Returns {is_empty, estimated_size}
+  def self.check_empty_and_size(collection) : Tuple(Bool, Int32)
+    if collection.responds_to?(:size)
+      size = collection.size
+      {size == 0, size}
+    else
+      # Fallback: check if empty without materializing the entire collection
+      empty = true
+      collection.each do |_|
+        empty = false
+        break
+      end
+      {empty, 100} # fallback size for unknown collections
+    end
+  end
+
   # Common parallel map implementation for Indexable collections
   # This method handles the core logic for Indexable versions using direct index access
   def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
@@ -168,6 +185,79 @@ module Parallel
 
     # Convert pointer to array
     Array(U).new(collection_size) { |i| result_array[i] }
+  end
+
+  # Lazy parallel each implementation for Enumerable collections
+  # This method processes elements without materializing the entire collection
+  def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+    errors = Channel(Exception).new
+    completed = Channel(Nil).new
+
+    # Use a mutex to synchronize iterator access
+    mutex = Mutex.new
+    iterator = enumerable.each
+    finished = false
+    active_fibers = 0
+
+    # Spawn worker fibers
+    worker_count = Fiber::ExecutionContext.default_workers_count
+    worker_count.times do
+      context.spawn do
+        loop do
+          items = [] of T
+
+          # Get a chunk of items safely
+          mutex.synchronize do
+            break if finished
+
+            chunk_size.times do
+              begin
+                item = iterator.next
+                if item.is_a?(Iterator::Stop)
+                  finished = true
+                  break
+                end
+                items << item
+              rescue ex
+                finished = true
+                errors.send(ex)
+                break
+              end
+            end
+          end
+
+          break if items.empty?
+
+          # Process the chunk
+          items.each do |item|
+            begin
+              block.call(item)
+            rescue ex
+              errors.send(ex)
+              break
+            end
+          end
+        end
+
+        completed.send(nil)
+      end
+    end
+
+    # Wait for all workers to complete
+    collected_errors = [] of Exception
+    worker_count.times do
+      select
+      when error = errors.receive
+        collected_errors << error
+      when completed.receive
+        # Continue
+      end
+    end
+
+    # Raise the first error if any occurred
+    unless collected_errors.empty?
+      raise collected_errors.first
+    end
   end
 
   # Common parallel each implementation

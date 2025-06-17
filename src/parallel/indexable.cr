@@ -12,11 +12,14 @@ module Indexable(T)
   # ```
   def par_map(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
     context = execution_context || Parallel::PARALLEL_CONTEXT
-    return [] of U if size == 0
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(size)
+    # Unified empty check
+    is_empty, collection_size = Parallel.check_empty_and_size(self)
+    return [] of U if is_empty
 
-    Parallel.parallel_map_indexable(size, context, chunk_size) do |index|
+    chunk_size = chunk || Parallel.adaptive_chunk_size(collection_size)
+
+    Parallel.parallel_map_indexable(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))
     end
   end
@@ -30,11 +33,14 @@ module Indexable(T)
   # ```
   def par_each(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> _)
     context = execution_context || Parallel::PARALLEL_CONTEXT
-    return if size == 0
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(size)
+    # Unified empty check
+    is_empty, collection_size = Parallel.check_empty_and_size(self)
+    return if is_empty
 
-    Parallel.parallel_each(size, context, chunk_size) do |index|
+    chunk_size = chunk || Parallel.adaptive_chunk_size(collection_size)
+
+    Parallel.parallel_each(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))
     end
   end
