@@ -3,7 +3,7 @@
 [![test](https://github.com/kojix2/parallel/actions/workflows/test.yml/badge.svg)](https://github.com/kojix2/parallel/actions/workflows/test.yml)
 [![Lines of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Ftokei.kojix2.net%2Fbadge%2Fgithub%2Fkojix2%2Fparallel%2Flines)](https://tokei.kojix2.net/github/kojix2/parallel)
 
-Crystal library for parallel processing using Fiber::ExecutionContext.
+[Crystal](https://github.com/crystal-lang/crystal) library for parallel processing using [Fiber::ExecutionContext](https://crystal-lang.org/api/Fiber/ExecutionContext.html).
 
 ## Requirements
 
@@ -52,12 +52,12 @@ crystal spec -Dpreview_mt -Dexecution_context
 
 ## Methods
 
-- par_map(execution_context = nil, *, chunk = nil, &block)
+- par_map(execution_context = nil, \*, chunk = nil, &block)
 
   - Applies block to each element in parallel, returns array of results.
   - `chunk`: Process elements in chunks to reduce context switches.
 
-- par_each(execution_context = nil, *, chunk = nil, &block)
+- par_each(execution_context = nil, \*, chunk = nil, &block)
   - Applies block to each element in parallel for side effects.
   - `chunk`: Process elements in chunks to reduce context switches.
 
