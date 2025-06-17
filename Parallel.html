@@ -127,7 +127,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/660162cde9bdfcb7fad33f55d504e33d31ef153b/src/parallel/core.cr#L2" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L2" target="_blank">
         parallel/core.cr
       </a>
     
@@ -208,6 +208,20 @@ Reusing a single context is recommended for performance</p>
         
       </li>
     
+      <li class="entry-summary">
+        <a href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method" class="signature"><strong>.parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> _)</a>
+        
+          <div class="summary"><p>Common parallel each implementation This method handles the core logic for both Enumerable and Indexable versions</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#parallel_map%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method" class="signature"><strong>.parallel_map</strong>(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U</a>
+        
+          <div class="summary"><p>Common parallel map implementation This method handles the core logic for both Enumerable and Indexable versions</p></div>
+        
+      </li>
+    
   </ul>
 
 
@@ -248,7 +262,7 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/660162cde9bdfcb7fad33f55d504e33d31ef153b/src/parallel/core.cr#L13" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -269,7 +283,7 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/660162cde9bdfcb7fad33f55d504e33d31ef153b/src/parallel/core.cr#L47" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L47" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -290,7 +304,7 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/660162cde9bdfcb7fad33f55d504e33d31ef153b/src/parallel/core.cr#L24" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L24" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -311,7 +325,51 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/660162cde9bdfcb7fad33f55d504e33d31ef153b/src/parallel/core.cr#L38" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L38" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="parallel_each(collection_size:Int32,context:Fiber::ExecutionContext::MultiThreaded,chunk_size:Int32,&amp;block:Int32-&gt;_)-class-method">
+      <div class="signature">
+        
+        def self.<strong>parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> _)
+
+        <a class="method-permalink" href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Common parallel each implementation
+This method handles the core logic for both Enumerable and Indexable versions</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L109" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="parallel_map(collection_size:Int32,context:Fiber::ExecutionContext::MultiThreaded,chunk_size:Int32,&amp;block:Int32-&gt;U)forallU-class-method">
+      <div class="signature">
+        
+        def self.<strong>parallel_map</strong>(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
+
+        <a class="method-permalink" href="#parallel_map%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Common parallel map implementation
+This method handles the core logic for both Enumerable and Indexable versions</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/d0d40aa0fe358246e3f609bde4f4b40c36863fc5/src/parallel/core.cr#L55" target="_blank">View source</a>]
         
       </div>
     </div>
