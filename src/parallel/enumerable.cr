@@ -15,54 +15,11 @@ module Enumerable(T)
     items = self.to_a
     return items.map(&block) if items.empty?
 
-    results = Channel(Tuple(Int32, U) | Exception).new
     chunk_size = chunk || Parallel.adaptive_chunk_size(items.size)
 
-    if chunk_size > 1 && items.size > chunk_size
-      # Chunk processing mode
-      chunks = items.each_slice(chunk_size).with_index.to_a
-
-      chunks.each do |chunk_items, chunk_idx|
-        context.spawn do
-          chunk_items.each_with_index do |item, item_idx|
-            begin
-              result = block.call(item)
-              global_idx = chunk_idx * chunk_size + item_idx
-              results.send({global_idx, result})
-            rescue ex
-              results.send(ex)
-              Parallel.log_fiber_exception(ex, "chunk #{chunk_idx}, item #{item_idx}")
-            end
-          end
-        end
-      end
-    else
-      # Element-wise processing mode
-      items.each_with_index do |item, idx|
-        context.spawn do
-          begin
-            result = block.call(item)
-            results.send({idx, result})
-          rescue ex
-            results.send(ex)
-            Parallel.log_fiber_exception(ex, "item #{idx}")
-          end
-        end
-      end
+    Parallel.parallel_map(items.size, context, chunk_size) do |index|
+      block.call(items[index])
     end
-
-    temp_results = Array(Tuple(Int32, U)).new
-    items.size.times do
-      case result = results.receive
-      when Tuple(Int32, U)
-        temp_results << result
-      when Exception
-        raise result
-      end
-    end
-
-    # Sort by index and extract values
-    temp_results.sort_by(&.[0]).map(&.[1])
   end
 
   # Parallel each operation
@@ -78,49 +35,10 @@ module Enumerable(T)
     items = self.to_a
     return if items.empty?
 
-    errors = Channel(Exception).new
-    completed = Channel(Nil).new
     chunk_size = chunk || Parallel.adaptive_chunk_size(items.size)
 
-    if chunk_size > 1 && items.size > chunk_size
-      # Chunk processing mode
-      chunks = items.each_slice(chunk_size).to_a
-
-      chunks.each_with_index do |chunk_items, chunk_idx|
-        context.spawn do
-          chunk_items.each_with_index do |item, item_idx|
-            begin
-              block.call(item)
-            rescue ex
-              errors.send(ex)
-              Parallel.log_fiber_exception(ex, "chunk #{chunk_idx}, item #{item_idx}")
-            end
-          end
-          completed.send(nil)
-        end
-      end
-
-      collected_errors = Parallel.handle_each_errors_safe(errors, completed, chunks.size)
-    else
-      # Element-wise processing mode
-      items.each_with_index do |item, idx|
-        context.spawn do
-          begin
-            block.call(item)
-            completed.send(nil)
-          rescue ex
-            errors.send(ex)
-            Parallel.log_fiber_exception(ex, "item #{idx}")
-          end
-        end
-      end
-
-      collected_errors = Parallel.handle_each_errors_safe(errors, completed, items.size)
-    end
-
-    # Raise the first error if any occurred (fail-fast behavior)
-    unless collected_errors.empty?
-      raise collected_errors.first
+    Parallel.parallel_each(items.size, context, chunk_size) do |index|
+      block.call(items[index])
     end
   end
 end

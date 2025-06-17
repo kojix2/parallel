@@ -49,4 +49,108 @@ module Parallel
       cleanup_block.call
     end
   end
+
+  # Common parallel map implementation
+  # This method handles the core logic for both Enumerable and Indexable versions
+  def self.parallel_map(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
+    return [] of U if collection_size == 0
+
+    results = Channel(Tuple(Int32, U) | Exception).new
+
+    if chunk_size > 1 && collection_size > chunk_size
+      # Chunk processing mode
+      chunks = (0...collection_size).each_slice(chunk_size).with_index.to_a
+
+      chunks.each do |chunk_indices, chunk_idx|
+        context.spawn do
+          chunk_indices.each_with_index do |index, item_idx|
+            begin
+              result = block.call(index)
+              global_idx = chunk_idx * chunk_size + item_idx
+              results.send({global_idx, result})
+            rescue ex
+              results.send(ex)
+              log_fiber_exception(ex, "chunk #{chunk_idx}, index #{index}")
+            end
+          end
+        end
+      end
+    else
+      # Element-wise processing mode
+      (0...collection_size).each do |index|
+        context.spawn do
+          begin
+            result = block.call(index)
+            results.send({index, result})
+          rescue ex
+            results.send(ex)
+            log_fiber_exception(ex, "index #{index}")
+          end
+        end
+      end
+    end
+
+    temp_results = Array(Tuple(Int32, U)).new
+    collection_size.times do
+      case result = results.receive
+      when Tuple(Int32, U)
+        temp_results << result
+      when Exception
+        raise result
+      end
+    end
+
+    # Sort by index and extract values
+    temp_results.sort_by(&.[0]).map(&.[1])
+  end
+
+  # Common parallel each implementation
+  # This method handles the core logic for both Enumerable and Indexable versions
+  def self.parallel_each(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> _)
+    return if collection_size == 0
+
+    errors = Channel(Exception).new
+    completed = Channel(Nil).new
+
+    if chunk_size > 1 && collection_size > chunk_size
+      # Chunk processing mode
+      chunks = (0...collection_size).each_slice(chunk_size).to_a
+
+      chunks.each_with_index do |chunk_indices, chunk_idx|
+        context.spawn do
+          chunk_indices.each do |index|
+            begin
+              block.call(index)
+            rescue ex
+              errors.send(ex)
+              log_fiber_exception(ex, "chunk #{chunk_idx}, index #{index}")
+            end
+          end
+          completed.send(nil)
+        end
+      end
+
+      collected_errors = handle_each_errors_safe(errors, completed, chunks.size)
+    else
+      # Element-wise processing mode
+      (0...collection_size).each do |index|
+        context.spawn do
+          begin
+            block.call(index)
+            completed.send(nil)
+          rescue ex
+            errors.send(ex)
+            log_fiber_exception(ex, "index #{index}")
+          end
+        end
+      end
+
+      collected_errors = handle_each_errors_safe(errors, completed, collection_size)
+    end
+
+    # Raise the first error if any occurred (fail-fast behavior)
+    unless collected_errors.empty?
+      raise collected_errors.first
+    end
+  end
 end
