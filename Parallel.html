@@ -127,21 +127,21 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/context.cr#L1" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/context.cr#L1" target="_blank">
         parallel/context.cr
       </a>
     
     <br/>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L2" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L2" target="_blank">
         parallel/core.cr
       </a>
     
     <br/>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/version.cr#L1" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/version.cr#L1" target="_blank">
         parallel/version.cr
       </a>
     
@@ -232,14 +232,14 @@ Reusing a single context is recommended for performance</p>
       <li class="entry-summary">
         <a href="#parallel_each_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AT-%3E_%29forallT-class-method" class="signature"><strong>.parallel_each_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T</a>
         
-          <div class="summary"><p>Lazy parallel each implementation for Enumerable collections This method processes elements without materializing the entire collection</p></div>
+          <div class="summary"><p>Lazy parallel each implementation for Enumerable collections This method processes elements without materializing the entire collection Uses lock-free work-stealing approach for better performance</p></div>
         
       </li>
     
       <li class="entry-summary">
         <a href="#parallel_map_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%2Cchunk_size%3AInt32%2C%26block%3AT-%3EU%29forallT%2CU-class-method" class="signature"><strong>.parallel_map_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U</a>
         
-          <div class="summary"><p>Common parallel map implementation for Enumerable collections using lazy evaluation This method handles the core logic for Enumerable versions without creating intermediate arrays</p></div>
+          <div class="summary"><p>Common parallel map implementation for Enumerable collections using lazy evaluation This method handles the core logic for Enumerable versions without creating intermediate arrays Uses lock-free work-stealing approach for better performance</p></div>
         
       </li>
     
@@ -297,7 +297,7 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L4" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L4" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -319,7 +319,7 @@ Returns {is_empty, estimated_size}</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L39" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L39" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -340,7 +340,7 @@ Returns {is_empty, estimated_size}</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L15" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L15" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -361,7 +361,7 @@ Returns {is_empty, estimated_size}</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L29" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L29" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -383,7 +383,7 @@ This method handles the core logic for both Enumerable and Indexable versions</p
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L292" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L455" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -399,13 +399,14 @@ This method handles the core logic for both Enumerable and Indexable versions</p
         <div class="doc">
           
           <p>Lazy parallel each implementation for Enumerable collections
-This method processes elements without materializing the entire collection</p>
+This method processes elements without materializing the entire collection
+Uses lock-free work-stealing approach for better performance</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L220" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L309" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -421,13 +422,14 @@ This method processes elements without materializing the entire collection</p>
         <div class="doc">
           
           <p>Common parallel map implementation for Enumerable collections using lazy evaluation
-This method handles the core logic for Enumerable versions without creating intermediate arrays</p>
+This method handles the core logic for Enumerable versions without creating intermediate arrays
+Uses lock-free work-stealing approach for better performance</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L132" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L133" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -449,7 +451,7 @@ This method handles the core logic for Indexable versions using direct index acc
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L76" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L76" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -471,7 +473,7 @@ Returns the validated chunk size or raises an exception for invalid values</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/95a9d0a11febf64e0c11e3632bdc22d86c4e7841/src/parallel/core.cr#L56" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/core.cr#L56" target="_blank">View source</a>]
         
       </div>
     </div>
