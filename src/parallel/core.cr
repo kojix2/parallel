@@ -1,14 +1,5 @@
 # Core module for parallel processing functionality
 module Parallel
-  VERSION = {{ `shards version #{__DIR__}`.chomp.stringify }}
-
-  # Global ExecutionContext for parallel processing
-  # Reusing a single context is recommended for performance
-  PARALLEL_CONTEXT = Fiber::ExecutionContext::MultiThreaded.new(
-    "parallel-workers",
-    Fiber::ExecutionContext.default_workers_count
-  )
-
   # Determines optimal chunk size for adaptive chunking
   def self.adaptive_chunk_size(collection_size : Int32) : Int32
     return 1 if collection_size == 0
@@ -40,13 +31,6 @@ module Parallel
       Crystal.print_buffered("Unhandled exception in parallel task (%s): %s", task_info, ex.message, exception: ex, to: STDERR)
     else
       Crystal.print_buffered("Unhandled exception in parallel task: %s", ex.message, exception: ex, to: STDERR)
-    end
-  end
-
-  # Ensures cleanup is performed even if exceptions occur
-  def self.ensure_cleanup(&cleanup_block)
-    at_exit do |exit_code, exception|
-      cleanup_block.call
     end
   end
 
@@ -217,7 +201,6 @@ module Parallel
     mutex = Mutex.new
     iterator = enumerable.each
     finished = false
-    active_fibers = 0
 
     # Spawn worker fibers
     worker_count = Fiber::ExecutionContext.default_workers_count

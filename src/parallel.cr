@@ -9,6 +9,8 @@
 # [1, 2, 3, 4].par_map { |x| x * 2 } # => [2, 4, 6, 8]
 # ```
 
+require "./parallel/version"
+require "./parallel/context"
 require "./parallel/core"
 require "./parallel/enumerable"
 require "./parallel/indexable"
