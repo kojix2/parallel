@@ -90,18 +90,20 @@ module Parallel
       end
     end
 
-    temp_results = Array(Tuple(Int32, U)).new
+    # Pre-allocate result array and fill directly by index (no sorting needed)
+    result_array = Pointer(U).malloc(collection_size)
     collection_size.times do
       case result = results.receive
       when Tuple(Int32, U)
-        temp_results << result
+        index, value = result
+        result_array[index] = value
       when Exception
         raise result
       end
     end
 
-    # Sort by index and extract values
-    temp_results.sort_by(&.[0]).map(&.[1])
+    # Convert pointer to array
+    Array(U).new(collection_size) { |i| result_array[i] }
   end
 
   # Common parallel each implementation
