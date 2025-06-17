@@ -141,8 +141,8 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L46" target="_blank">
-        parallel.cr
+      <a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/enumerable.cr#L4" target="_blank">
+        parallel/enumerable.cr
       </a>
     
     <br/>
@@ -172,14 +172,14 @@
       <li class="entry-summary">
         <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
         
-          <div class="summary"><p>Parallel each operation Applies the given block to each element in parallel (no return value)</p></div>
+          <div class="summary"><p>Parallel each operation Applies the given block to each element in parallel (no return value) Uses robust error handling internally but maintains fail-fast behavior</p></div>
         
       </li>
     
       <li class="entry-summary">
         <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
         
-          <div class="summary"><p>Parallel map operation Applies the given block to each element in parallel and returns an array of results</p></div>
+          <div class="summary"><p>Parallel map operation Applies the given block to each element in parallel and returns an array of results Uses robust error handling internally but maintains fail-fast behavior</p></div>
         
       </li>
     
@@ -218,7 +218,8 @@
         <div class="doc">
           
           <p>Parallel each operation
-Applies the given block to each element in parallel (no return value)</p>
+Applies the given block to each element in parallel (no return value)
+Uses robust error handling internally but maintains fail-fast behavior</p>
 <pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>].par_each { <span class="o">|</span>x<span class="o">|</span> puts x }
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_each(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> puts x } <span class="c"># same result, fewer context switches</span></code></pre>
         </div>
@@ -226,7 +227,7 @@ Applies the given block to each element in parallel (no return value)</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L114" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/enumerable.cr#L76" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -242,15 +243,16 @@ Applies the given block to each element in parallel (no return value)</p>
         <div class="doc">
           
           <p>Parallel map operation
-Applies the given block to each element in parallel and returns an array of results</p>
-<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8]</span>
+Applies the given block to each element in parallel and returns an array of results
+Uses robust error handling internally but maintains fail-fast behavior</p>
+<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }           <span class="c"># =&gt; [2, 4, 6, 8]</span>
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8] (same result, fewer context switches)</span></code></pre>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L54" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/enumerable.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>

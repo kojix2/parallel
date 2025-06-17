@@ -100,12 +100,7 @@
     Overview
   </h2>
 
-  <p>Parallel processing library for Crystal using Fiber::ExecutionContext</p>
-<p>This library extends Enumerable and Indexable with parallel processing methods.
-It requires Crystal 1.6.0+ and the following flags:
--Dpreview_mt -Dexecution_context</p>
-<p>Example:</p>
-<pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8]</span></code></pre>
+  <p>Core module for parallel processing functionality</p>
 
 
 
@@ -132,8 +127,8 @@ It requires Crystal 1.6.0+ and the following flags:
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L11" target="_blank">
-        parallel.cr
+      <a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/core.cr#L2" target="_blank">
+        parallel/core.cr
       </a>
     
     <br/>
@@ -164,7 +159,7 @@ Reusing a single context is recommended for performance</p>
       
     
       <dt class="entry-const" id="VERSION">
-        <strong>VERSION</strong> = <code><span class="o">{{</span> (<span class="s">`shards version /home/runner/work/parallel/parallel/src`</span>).chomp.stringify }}</code>
+        <strong>VERSION</strong> = <code><span class="o">{{</span> (<span class="s">`shards version /home/runner/work/parallel/parallel/src/parallel`</span>).chomp.stringify }}</code>
       </dt>
       
     
@@ -193,9 +188,23 @@ Reusing a single context is recommended for performance</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#handle_each_errors%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29-class-method" class="signature"><strong>.handle_each_errors</strong>(errors_channel, completed_channel, expected_count : Int32)</a>
+        <a href="#ensure_cleanup%28%26cleanup_block%29-class-method" class="signature"><strong>.ensure_cleanup</strong>(&cleanup_block)</a>
         
-          <div class="summary"><p>Handles parallel each operation error collection</p></div>
+          <div class="summary"><p>Ensures cleanup is performed even if exceptions occur</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#handle_each_errors_safe%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29%3AArray%28Exception%29-class-method" class="signature"><strong>.handle_each_errors_safe</strong>(errors_channel, completed_channel, expected_count : Int32) : Array(Exception)</a>
+        
+          <div class="summary"><p>Handles parallel each operation with error collection (new behavior - collect all errors)</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#log_fiber_exception%28ex%3AException%2Ctask_info%3AString%7CNil%3Dnil%29-class-method" class="signature"><strong>.log_fiber_exception</strong>(ex : Exception, task_info : String | Nil = <span class="n">nil</span>)</a>
+        
+          <div class="summary"><p>Logs fiber exceptions with context information</p></div>
         
       </li>
     
@@ -239,28 +248,70 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L22" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/core.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="handle_each_errors(errors_channel,completed_channel,expected_count:Int32)-class-method">
+    <div class="entry-detail" id="ensure_cleanup(&amp;cleanup_block)-class-method">
       <div class="signature">
         
-        def self.<strong>handle_each_errors</strong>(errors_channel, completed_channel, expected_count : Int32)
+        def self.<strong>ensure_cleanup</strong>(&cleanup_block)
 
-        <a class="method-permalink" href="#handle_each_errors%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29-class-method">#</a>
+        <a class="method-permalink" href="#ensure_cleanup%28%26cleanup_block%29-class-method">#</a>
       </div>
       
         <div class="doc">
           
-          <p>Handles parallel each operation error collection</p>
+          <p>Ensures cleanup is performed even if exceptions occur</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/c1a5abd9ded13bc832a464f495afd7b180684d4c/src/parallel.cr#L33" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/core.cr#L47" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="handle_each_errors_safe(errors_channel,completed_channel,expected_count:Int32):Array(Exception)-class-method">
+      <div class="signature">
+        
+        def self.<strong>handle_each_errors_safe</strong>(errors_channel, completed_channel, expected_count : Int32) : Array(Exception)
+
+        <a class="method-permalink" href="#handle_each_errors_safe%28errors_channel%2Ccompleted_channel%2Cexpected_count%3AInt32%29%3AArray%28Exception%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Handles parallel each operation with error collection (new behavior - collect all errors)</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/core.cr#L24" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="log_fiber_exception(ex:Exception,task_info:String|Nil=nil)-class-method">
+      <div class="signature">
+        
+        def self.<strong>log_fiber_exception</strong>(ex : Exception, task_info : String | Nil = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#log_fiber_exception%28ex%3AException%2Ctask_info%3AString%7CNil%3Dnil%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Logs fiber exceptions with context information</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/21394d0fd493a2ae08ec1ef601c09ab520b342fb/src/parallel/core.cr#L38" target="_blank">View source</a>]
         
       </div>
     </div>
