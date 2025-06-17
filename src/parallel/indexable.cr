@@ -17,7 +17,8 @@ module Indexable(T)
     is_empty, collection_size = Parallel.check_empty_and_size(self)
     return [] of U if is_empty
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(collection_size)
+    # Validate and normalize chunk size
+    chunk_size = Parallel.validate_chunk_size(chunk, collection_size)
 
     Parallel.parallel_map_indexable(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))
@@ -38,7 +39,8 @@ module Indexable(T)
     is_empty, collection_size = Parallel.check_empty_and_size(self)
     return if is_empty
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(collection_size)
+    # Validate and normalize chunk size
+    chunk_size = Parallel.validate_chunk_size(chunk, collection_size)
 
     Parallel.parallel_each(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))

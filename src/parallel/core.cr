@@ -67,6 +67,26 @@ module Parallel
     end
   end
 
+  # Validates and normalizes chunk size parameter
+  # Returns the validated chunk size or raises an exception for invalid values
+  def self.validate_chunk_size(chunk : Int32?, collection_size : Int32) : Int32
+    if chunk.nil?
+      return adaptive_chunk_size(collection_size)
+    end
+
+    if chunk <= 0
+      raise ArgumentError.new("Chunk size must be a positive integer, got: #{chunk}")
+    end
+
+    # Warn if chunk size is larger than collection size (still valid but potentially inefficient)
+    if chunk > collection_size && collection_size > 0
+      # Allow but use collection_size as effective chunk size to avoid empty chunks
+      collection_size
+    else
+      chunk
+    end
+  end
+
   # Common parallel map implementation for Indexable collections
   # This method handles the core logic for Indexable versions using direct index access
   def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
