@@ -4,6 +4,7 @@ require "./core"
 module Enumerable(T)
   # Parallel map operation
   # Applies the given block to each element in parallel and returns an array of results
+  # Uses lazy evaluation to avoid creating intermediate arrays for memory efficiency
   # Uses robust error handling internally but maintains fail-fast behavior
   #
   # ```
@@ -12,14 +13,20 @@ module Enumerable(T)
   # ```
   def par_map(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
     context = execution_context || Parallel::PARALLEL_CONTEXT
-    items = self.to_a
-    return items.map(&block) if items.empty?
 
-    chunk_size = chunk || Parallel.adaptive_chunk_size(items.size)
-
-    Parallel.parallel_map(items.size, context, chunk_size) do |index|
-      block.call(items[index])
+    # Check if empty without materializing the entire collection
+    empty = true
+    self.each do |_|
+      empty = false
+      break
     end
+    return [] of U if empty
+
+    # Determine chunk size based on estimated size (if available) or use default
+    estimated_size = responds_to?(:size) ? size : 100 # fallback for unknown size
+    chunk_size = chunk || Parallel.adaptive_chunk_size(estimated_size)
+
+    Parallel.parallel_map_enumerable(self, context, chunk_size, &block)
   end
 
   # Parallel each operation

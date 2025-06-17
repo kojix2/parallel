@@ -50,9 +50,9 @@ module Parallel
     end
   end
 
-  # Common parallel map implementation
-  # This method handles the core logic for both Enumerable and Indexable versions
-  def self.parallel_map(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
+  # Common parallel map implementation for Indexable collections
+  # This method handles the core logic for Indexable versions using direct index access
+  def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
     return [] of U if collection_size == 0
 
     results = Channel(Tuple(Int32, U) | Exception).new
@@ -85,6 +85,70 @@ module Parallel
           rescue ex
             results.send(ex)
             log_fiber_exception(ex, "index #{index}")
+          end
+        end
+      end
+    end
+
+    # Pre-allocate result array and fill directly by index (no sorting needed)
+    result_array = Pointer(U).malloc(collection_size)
+    collection_size.times do
+      case result = results.receive
+      when Tuple(Int32, U)
+        index, value = result
+        result_array[index] = value
+      when Exception
+        raise result
+      end
+    end
+
+    # Convert pointer to array
+    Array(U).new(collection_size) { |i| result_array[i] }
+  end
+
+  # Common parallel map implementation for Enumerable collections using lazy evaluation
+  # This method handles the core logic for Enumerable versions without creating intermediate arrays
+  def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+    # Use iterator for lazy evaluation to avoid creating intermediate arrays
+    items_with_index = [] of Tuple(T, Int32)
+    enumerable.each_with_index do |item, index|
+      items_with_index << {item, index}
+    end
+
+    return [] of U if items_with_index.empty?
+
+    results = Channel(Tuple(Int32, U) | Exception).new
+    collection_size = items_with_index.size
+
+    if chunk_size > 1 && collection_size > chunk_size
+      # Chunk processing mode
+      chunks = items_with_index.each_slice(chunk_size).with_index.to_a
+
+      chunks.each do |chunk_items, chunk_idx|
+        context.spawn do
+          chunk_items.each_with_index do |item_with_index, item_idx|
+            item, original_index = item_with_index
+            begin
+              result = block.call(item)
+              results.send({original_index, result})
+            rescue ex
+              results.send(ex)
+              log_fiber_exception(ex, "chunk #{chunk_idx}, item #{item_idx}")
+            end
+          end
+        end
+      end
+    else
+      # Element-wise processing mode
+      items_with_index.each do |item_with_index|
+        item, index = item_with_index
+        context.spawn do
+          begin
+            result = block.call(item)
+            results.send({index, result})
+          rescue ex
+            results.send(ex)
+            log_fiber_exception(ex, "item #{index}")
           end
         end
       end

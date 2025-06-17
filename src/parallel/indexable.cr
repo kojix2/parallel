@@ -16,7 +16,7 @@ module Indexable(T)
 
     chunk_size = chunk || Parallel.adaptive_chunk_size(size)
 
-    Parallel.parallel_map(size, context, chunk_size) do |index|
+    Parallel.parallel_map_indexable(size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))
     end
   end
