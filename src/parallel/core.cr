@@ -156,16 +156,7 @@ module Parallel
         begin
           loop do
             # Atomically get and increment task index
-            current_index = task_index.get(:acquire)
-            # Use compare_and_set for thread-safe increment
-            loop do
-              break if current_index >= tasks_with_indices.size
-              if task_index.compare_and_set(current_index, current_index + 1, :acquire, :acquire)
-                break
-              end
-              current_index = task_index.get(:acquire)
-            end
-
+            current_index = task_index.add(1, :acquire)
             break if current_index >= tasks_with_indices.size
 
             # Process the task chunk
@@ -332,16 +323,7 @@ module Parallel
         begin
           loop do
             # Atomically get and increment task index
-            current_index = task_index.get(:acquire)
-            # Use compare_and_set for thread-safe increment
-            loop do
-              break if current_index >= tasks.size
-              if task_index.compare_and_set(current_index, current_index + 1, :acquire, :acquire)
-                break
-              end
-              current_index = task_index.get(:acquire)
-            end
-
+            current_index = task_index.add(1, :acquire)
             break if current_index >= tasks.size
 
             # Process the task chunk
