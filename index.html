@@ -125,7 +125,11 @@
 
 <span class="c"># Custom ExecutionContext</span>
 context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">Parallel</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
-[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
+[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }
+
+<span class="c"># Use system default ExecutionContext</span>
+<span class="t">Parallel</span>.execution_context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span>.default
+[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
 <h3><a id="compilation" class="anchor" href="#compilation">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
@@ -139,6 +143,18 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
   </svg>
 </a>Methods</h2>
 <ul>
+<li>
+<p>execution_context : Fiber::ExecutionContext::Parallel</p>
+<ul>
+<li>Returns the library default context.</li>
+</ul>
+</li>
+<li>
+<p>execution_context=(context : Fiber::ExecutionContext::Parallel)</p>
+<ul>
+<li>Sets the library default context.</li>
+</ul>
+</li>
 <li>
 <p>par_map(execution_context = nil, *, chunk = nil, &amp;block)</p>
 <ul>
@@ -163,7 +179,7 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <li>Works with any Enumerable (Array, Range, Set, Hash, etc.)</li>
 <li>Indexable types (Array, Slice) preserve order</li>
 <li>Exceptions are propagated from parallel tasks</li>
-<li>Uses a shared <code>Fiber::ExecutionContext::Parallel</code> by default for performance</li>
+<li>Uses a shared <code>Fiber::ExecutionContext::Parallel</code> by default for performance (configurable via <code>Parallel.execution_context</code>)</li>
 <li>Default worker count is based on <code>Fiber::ExecutionContext.default_workers_count</code> (affected by <code>CRYSTAL_WORKERS</code> or CPU count)</li>
 <li>Thread safety is your responsibility when accessing shared resources</li>
 </ul>

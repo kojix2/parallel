@@ -143,7 +143,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/indexable.cr#L4" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/indexable.cr#L5" target="_blank">
         parallel/indexable.cr
       </a>
     
@@ -172,14 +172,14 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
+        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
         
           <div class="summary"><p>Optimized parallel each for indexable collections Uses robust error handling internally and propagates exceptions</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
+        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
         
           <div class="summary"><p>Optimized parallel map for indexable collections Uses unsafe_fetch for better performance and guarantees order preservation Uses robust error handling internally and propagates exceptions</p></div>
         
@@ -196,13 +196,13 @@
   <h3>Instance methods inherited from module <code><a href="Enumerable.html">Enumerable(T)</a></code></h3>
   
   
-    <a href="Enumerable.html#par_each%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="tooltip">
-      <span>par_each(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</span>
+    <a href="Enumerable.html#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="tooltip">
+      <span>par_each(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</span>
     par_each</a>, 
     
   
-    <a href="Enumerable.html#par_map%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="tooltip">
-      <span>par_map(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</span>
+    <a href="Enumerable.html#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="tooltip">
+      <span>par_map(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</span>
     par_map</a>
     
   
@@ -249,12 +249,12 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;_)-instance-method">
+    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext::Parallel|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;_)-instance-method">
       <div class="signature">
         
-        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)
+        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)
 
-        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
+        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
       </div>
       
         <div class="doc">
@@ -268,17 +268,17 @@ Uses robust error handling internally and propagates exceptions</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/indexable.cr#L35" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/indexable.cr#L36" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
+    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext::Parallel|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
       <div class="signature">
         
-        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U
+        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext::Parallel | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U
 
-        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
+        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
       </div>
       
         <div class="doc">
@@ -293,7 +293,7 @@ Uses robust error handling internally and propagates exceptions</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/indexable.cr#L13" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/indexable.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>

@@ -127,21 +127,21 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/context.cr#L1" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/context.cr#L1" target="_blank">
         parallel/context.cr
       </a>
     
     <br/>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L2" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L4" target="_blank">
         parallel/core.cr
       </a>
     
     <br/>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/version.cr#L1" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/version.cr#L1" target="_blank">
         parallel/version.cr
       </a>
     
@@ -161,16 +161,6 @@
     </h2>
   
   <dl>
-    
-      <dt class="entry-const" id="PARALLEL_CONTEXT">
-        <strong>PARALLEL_CONTEXT</strong> = <code><span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">Parallel</span>.new(<span class="s">&quot;parallel-workers&quot;</span>, <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span>.default_workers_count)</code>
-      </dt>
-      
-      <dd class="entry-const-doc">
-        <p>Global ExecutionContext for parallel processing
-Reusing a single context is recommended for performance</p>
-      </dd>
-      
     
       <dt class="entry-const" id="VERSION">
         <strong>VERSION</strong> = <code><span class="o">{{</span> (<span class="s">`shards version /home/runner/work/parallel/parallel/src/parallel`</span>).chomp.stringify }}</code>
@@ -209,6 +199,20 @@ Reusing a single context is recommended for performance</p>
       </li>
     
       <li class="entry-summary">
+        <a href="#execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel-class-method" class="signature"><strong>.execution_context</strong> : Fiber::ExecutionContext::Parallel</a>
+        
+          <div class="summary"><p>Returns the current default context.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#execution_context%3D%28context%3AFiber%3A%3AExecutionContext%3A%3AParallel%29%3AFiber%3A%3AExecutionContext%3A%3AParallel-class-method" class="signature"><strong>.execution_context=</strong>(context : Fiber::ExecutionContext::Parallel) : Fiber::ExecutionContext::Parallel</a>
+        
+          <div class="summary"><p>Sets the default context explicitly.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#log_fiber_exception%28ex%3AException%2Ctask_info%3AString%7CNil%3Dnil%29-class-method" class="signature"><strong>.log_fiber_exception</strong>(ex : Exception, task_info : String | Nil = <span class="n">nil</span>)</a>
         
           <div class="summary"><p>Logs fiber exceptions with context information</p></div>
@@ -216,28 +220,28 @@ Reusing a single context is recommended for performance</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method" class="signature"><strong>.parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> _)</a>
+        <a href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method" class="signature"><strong>.parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> _)</a>
         
           <div class="summary"><p>Common parallel each implementation This method handles the core logic for both Enumerable and Indexable versions</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#parallel_each_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AT-%3E_%29forallT-class-method" class="signature"><strong>.parallel_each_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T</a>
+        <a href="#parallel_each_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AT-%3E_%29forallT-class-method" class="signature"><strong>.parallel_each_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> _) forall T</a>
         
           <div class="summary"><p>Lazy parallel each implementation for Enumerable collections This method processes elements without materializing the entire collection Uses lock-free work-stealing approach for better performance</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#parallel_map_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AT-%3EU%29forallT%2CU-class-method" class="signature"><strong>.parallel_map_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U</a>
+        <a href="#parallel_map_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AT-%3EU%29forallT%2CU-class-method" class="signature"><strong>.parallel_map_enumerable</strong>(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> U) forall T, U</a>
         
           <div class="summary"><p>Common parallel map implementation for Enumerable collections using lazy evaluation This method handles the core logic for Enumerable versions without creating intermediate arrays Uses lock-free work-stealing approach for better performance</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#parallel_map_indexable%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method" class="signature"><strong>.parallel_map_indexable</strong>(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> U) forall U</a>
+        <a href="#parallel_map_indexable%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method" class="signature"><strong>.parallel_map_indexable</strong>(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> U) forall U</a>
         
           <div class="summary"><p>Common parallel map implementation for Indexable collections This method handles the core logic for Indexable versions using direct index access</p></div>
         
@@ -290,7 +294,7 @@ Reusing a single context is recommended for performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L4" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L6" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -312,7 +316,49 @@ Returns {is_empty, estimated_size}</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L25" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L27" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="execution_context:Fiber::ExecutionContext::Parallel-class-method">
+      <div class="signature">
+        
+        def self.<strong>execution_context</strong> : Fiber::ExecutionContext::Parallel
+
+        <a class="method-permalink" href="#execution_context%3AFiber%3A%3AExecutionContext%3A%3AParallel-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns the current default context. Lazily creates a dedicated context.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/context.cr#L6" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="execution_context=(context:Fiber::ExecutionContext::Parallel):Fiber::ExecutionContext::Parallel-class-method">
+      <div class="signature">
+        
+        def self.<strong>execution_context=</strong>(context : Fiber::ExecutionContext::Parallel) : Fiber::ExecutionContext::Parallel
+
+        <a class="method-permalink" href="#execution_context%3D%28context%3AFiber%3A%3AExecutionContext%3A%3AParallel%29%3AFiber%3A%3AExecutionContext%3A%3AParallel-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Sets the default context explicitly.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/context.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -333,17 +379,17 @@ Returns {is_empty, estimated_size}</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L15" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L17" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="parallel_each(collection_size:Int32,context:Fiber::ExecutionContext,chunk_size:Int32,&amp;block:Int32-&gt;_)-class-method">
+    <div class="entry-detail" id="parallel_each(collection_size:Int32,context:Fiber::ExecutionContext::Parallel,chunk_size:Int32,&amp;block:Int32-&gt;_)-class-method">
       <div class="signature">
         
-        def self.<strong>parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> _)
+        def self.<strong>parallel_each</strong>(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> _)
 
-        <a class="method-permalink" href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method">#</a>
+        <a class="method-permalink" href="#parallel_each%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3E_%29-class-method">#</a>
       </div>
       
         <div class="doc">
@@ -355,17 +401,17 @@ This method handles the core logic for both Enumerable and Indexable versions</p
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L439" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L441" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="parallel_each_enumerable(enumerable:Enumerable(T),context:Fiber::ExecutionContext,chunk_size:Int32,&amp;block:T-&gt;_)forallT-class-method">
+    <div class="entry-detail" id="parallel_each_enumerable(enumerable:Enumerable(T),context:Fiber::ExecutionContext::Parallel,chunk_size:Int32,&amp;block:T-&gt;_)forallT-class-method">
       <div class="signature">
         
-        def self.<strong>parallel_each_enumerable</strong>(enumerable : <a href="Enumerable.html">Enumerable</a>(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
+        def self.<strong>parallel_each_enumerable</strong>(enumerable : <a href="Enumerable.html">Enumerable</a>(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> _) forall T
 
-        <a class="method-permalink" href="#parallel_each_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AT-%3E_%29forallT-class-method">#</a>
+        <a class="method-permalink" href="#parallel_each_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AT-%3E_%29forallT-class-method">#</a>
       </div>
       
         <div class="doc">
@@ -378,17 +424,17 @@ Uses lock-free work-stealing approach for better performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L299" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L301" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="parallel_map_enumerable(enumerable:Enumerable(T),context:Fiber::ExecutionContext,chunk_size:Int32,&amp;block:T-&gt;U)forallT,U-class-method">
+    <div class="entry-detail" id="parallel_map_enumerable(enumerable:Enumerable(T),context:Fiber::ExecutionContext::Parallel,chunk_size:Int32,&amp;block:T-&gt;U)forallT,U-class-method">
       <div class="signature">
         
-        def self.<strong>parallel_map_enumerable</strong>(enumerable : <a href="Enumerable.html">Enumerable</a>(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
+        def self.<strong>parallel_map_enumerable</strong>(enumerable : <a href="Enumerable.html">Enumerable</a>(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> U) forall T, U
 
-        <a class="method-permalink" href="#parallel_map_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AT-%3EU%29forallT%2CU-class-method">#</a>
+        <a class="method-permalink" href="#parallel_map_enumerable%28enumerable%3AEnumerable%28T%29%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AT-%3EU%29forallT%2CU-class-method">#</a>
       </div>
       
         <div class="doc">
@@ -401,17 +447,17 @@ Uses lock-free work-stealing approach for better performance</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L123" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L125" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="parallel_map_indexable(collection_size:Int32,context:Fiber::ExecutionContext,chunk_size:Int32,&amp;block:Int32-&gt;U)forallU-class-method">
+    <div class="entry-detail" id="parallel_map_indexable(collection_size:Int32,context:Fiber::ExecutionContext::Parallel,chunk_size:Int32,&amp;block:Int32-&gt;U)forallU-class-method">
       <div class="signature">
         
-        def self.<strong>parallel_map_indexable</strong>(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> U) forall U
+        def self.<strong>parallel_map_indexable</strong>(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> U) forall U
 
-        <a class="method-permalink" href="#parallel_map_indexable%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method">#</a>
+        <a class="method-permalink" href="#parallel_map_indexable%28collection_size%3AInt32%2Ccontext%3AFiber%3A%3AExecutionContext%3A%3AParallel%2Cchunk_size%3AInt32%2C%26block%3AInt32-%3EU%29forallU-class-method">#</a>
       </div>
       
         <div class="doc">
@@ -423,7 +469,7 @@ This method handles the core logic for Indexable versions using direct index acc
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L64" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -445,7 +491,7 @@ Returns the validated chunk size or raises an exception for invalid values</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/5daf92e64cbd48e6a6d8252972527382bb906cf8/src/parallel/core.cr#L42" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/493a28ae4e5a7eff2e622a712fe9d712a38cb92d/src/parallel/core.cr#L44" target="_blank">View source</a>]
         
       </div>
     </div>
