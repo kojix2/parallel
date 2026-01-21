@@ -24,6 +24,8 @@ jobs:
       - name: Install dependencies
         run: shards install --without-development
       - name: Run demo
-        run: crystal run examples/demo.cr -Dpreview_mt -Dexecution_context
+        run: |
+          crystal run examples/demo.cr -Dpreview_mt -Dexecution_context
+          crystal run examples/benchmark.cr -Dpreview_mt -Dexecution_context
       - name: Run tests
         run: crystal spec -Dpreview_mt -Dexecution_context
