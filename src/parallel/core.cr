@@ -16,11 +16,14 @@ module Parallel
 
   # Logs fiber exceptions with context information
   def self.log_fiber_exception(ex : Exception, task_info : String? = nil)
-    if task_info
-      Crystal.print_buffered("Unhandled exception in parallel task (%s): %s", task_info, ex.message, exception: ex, to: STDERR)
-    else
-      Crystal.print_buffered("Unhandled exception in parallel task: %s", ex.message, exception: ex, to: STDERR)
-    end
+    message = if task_info
+                "Unhandled exception in parallel task (#{task_info}): #{ex.message}"
+              else
+                "Unhandled exception in parallel task: #{ex.message}"
+              end
+
+    STDERR.puts(message)
+    STDERR.puts(ex.backtrace.join("\n")) if ex.backtrace
   end
 
   # Unified empty check for collections
