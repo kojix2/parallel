@@ -11,20 +11,6 @@ module Parallel
     auto_chunk_size.clamp(1, 1000)
   end
 
-  # Handles parallel each operation with error collection (new behavior - collect all errors)
-  def self.handle_each_errors_safe(errors_channel, completed_channel, expected_count : Int32) : Array(Exception)
-    collected_errors = [] of Exception
-    expected_count.times do
-      select
-      when error = errors_channel.receive
-        collected_errors << error
-      when completed_channel.receive
-        # Continue
-      end
-    end
-    collected_errors
-  end
-
   # Logs fiber exceptions with context information
   def self.log_fiber_exception(ex : Exception, task_info : String? = nil)
     if task_info
@@ -73,7 +59,7 @@ module Parallel
 
   # Common parallel map implementation for Indexable collections
   # This method handles the core logic for Indexable versions using direct index access
-  def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> U) forall U
+  def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> U) forall U
     return [] of U if collection_size == 0
 
     results = Channel(Tuple(Int32, U) | Exception).new
@@ -84,11 +70,10 @@ module Parallel
 
       chunks.each do |chunk_indices, chunk_idx|
         context.spawn do
-          chunk_indices.each_with_index do |index, item_idx|
+          chunk_indices.each do |index|
             begin
               result = block.call(index)
-              global_idx = chunk_idx * chunk_size + item_idx
-              results.send({global_idx, result})
+              results.send({index, result})
             rescue ex
               results.send(ex)
               log_fiber_exception(ex, "chunk #{chunk_idx}, index #{index}")
@@ -113,14 +98,19 @@ module Parallel
 
     # Pre-allocate result array and fill directly by index (no sorting needed)
     result_array = Pointer(U).malloc(collection_size)
+    first_error = nil
     collection_size.times do
       case result = results.receive
       when Tuple(Int32, U)
         index, value = result
         result_array[index] = value
       when Exception
-        raise result
+        first_error ||= result
       end
+    end
+
+    if first_error
+      raise first_error
     end
 
     # Convert pointer to array
@@ -130,7 +120,7 @@ module Parallel
   # Common parallel map implementation for Enumerable collections using lazy evaluation
   # This method handles the core logic for Enumerable versions without creating intermediate arrays
   # Uses lock-free work-stealing approach for better performance
-  def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+  def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
     # Try optimized approaches first, fallback to safe implementation for edge cases
     if enumerable.responds_to?(:size) && enumerable.size > 0
       parallel_map_enumerable_workstealing(enumerable, context, chunk_size, &block)
@@ -139,8 +129,8 @@ module Parallel
     end
   end
 
-  # Work-stealing optimized implementation for known-size enumerables (map version)
-  private def self.parallel_map_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+  # Work-stealing optimized implementation for known-size enumerable (map version)
+  private def self.parallel_map_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
     # Convert to array with indices first to ensure consistent iteration
     items_with_indices = enumerable.each_with_index.to_a
     return [] of U if items_with_indices.empty?
@@ -217,8 +207,8 @@ module Parallel
     result_map.to_a.sort_by(&.[0]).map(&.[1])
   end
 
-  # Safe fallback implementation for unknown-size enumerables (map version)
-  private def self.parallel_map_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> U) forall T, U
+  # Safe fallback implementation for unknown-size enumerable (map version)
+  private def self.parallel_map_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
     results = Channel(Tuple(Int32, U) | Exception).new
     completed = Channel(Nil).new
 
@@ -306,7 +296,7 @@ module Parallel
   # Lazy parallel each implementation for Enumerable collections
   # This method processes elements without materializing the entire collection
   # Uses lock-free work-stealing approach for better performance
-  def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+  def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
     # Try optimized approaches first, fallback to safe implementation for edge cases
     if enumerable.responds_to?(:size) && enumerable.size > 0
       parallel_each_enumerable_workstealing(enumerable, context, chunk_size, &block)
@@ -315,8 +305,8 @@ module Parallel
     end
   end
 
-  # Work-stealing optimized implementation for known-size enumerables
-  private def self.parallel_each_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
+  # Work-stealing optimized implementation for known-size enumerable
+  private def self.parallel_each_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
     # Convert to array first to ensure consistent iteration
     items = enumerable.to_a
     return if items.empty?
@@ -327,12 +317,12 @@ module Parallel
 
     # Use atomic counter for lock-free task distribution
     task_index = Atomic(Int32).new(0)
-    errors = Channel(Exception).new
-    completed = Channel(Nil).new
+    worker_results = Channel(Exception?).new
 
     # Spawn worker fibers
     worker_count.times do |worker_id|
       context.spawn do
+        worker_error = nil
         begin
           loop do
             # Atomically get and increment task index
@@ -354,10 +344,10 @@ module Parallel
             end
           end
         rescue ex
-          errors.send(ex)
+          worker_error ||= ex
           log_fiber_exception(ex, "worker #{worker_id}")
         ensure
-          completed.send(nil)
+          worker_results.send(worker_error)
         end
       end
     end
@@ -365,11 +355,8 @@ module Parallel
     # Wait for all workers to complete
     collected_errors = [] of Exception
     worker_count.times do
-      select
-      when error = errors.receive
+      if error = worker_results.receive
         collected_errors << error
-      when completed.receive
-        # Continue
       end
     end
 
@@ -379,10 +366,9 @@ module Parallel
     end
   end
 
-  # Safe fallback implementation for unknown-size enumerables
-  private def self.parallel_each_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : T -> _) forall T
-    errors = Channel(Exception).new
-    completed = Channel(Nil).new
+  # Safe fallback implementation for unknown-size enumerable
+  private def self.parallel_each_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
+    worker_results = Channel(Exception?).new
 
     # Use a mutex to synchronize iterator access (fallback for edge cases)
     mutex = Mutex.new
@@ -393,6 +379,7 @@ module Parallel
     worker_count = Fiber::ExecutionContext.default_workers_count
     worker_count.times do
       context.spawn do
+        worker_error = nil
         loop do
           items = [] of T
 
@@ -410,7 +397,7 @@ module Parallel
                 items << item
               rescue ex
                 finished = true
-                errors.send(ex)
+                worker_error ||= ex
                 break
               end
             end
@@ -423,24 +410,21 @@ module Parallel
             begin
               block.call(item)
             rescue ex
-              errors.send(ex)
+              worker_error ||= ex
               break
             end
           end
         end
 
-        completed.send(nil)
+        worker_results.send(worker_error)
       end
     end
 
     # Wait for all workers to complete
     collected_errors = [] of Exception
     worker_count.times do
-      select
-      when error = errors.receive
+      if error = worker_results.receive
         collected_errors << error
-      when completed.receive
-        # Continue
       end
     end
 
@@ -452,11 +436,10 @@ module Parallel
 
   # Common parallel each implementation
   # This method handles the core logic for both Enumerable and Indexable versions
-  def self.parallel_each(collection_size : Int32, context : Fiber::ExecutionContext::MultiThreaded, chunk_size : Int32, &block : Int32 -> _)
+  def self.parallel_each(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> _)
     return if collection_size == 0
 
-    errors = Channel(Exception).new
-    completed = Channel(Nil).new
+    worker_results = Channel(Exception?).new
 
     if chunk_size > 1 && collection_size > chunk_size
       # Chunk processing mode
@@ -464,37 +447,51 @@ module Parallel
 
       chunks.each_with_index do |chunk_indices, chunk_idx|
         context.spawn do
+          chunk_error = nil
           chunk_indices.each do |index|
             begin
               block.call(index)
             rescue ex
-              errors.send(ex)
+              chunk_error ||= ex
               log_fiber_exception(ex, "chunk #{chunk_idx}, index #{index}")
+              break
             end
           end
-          completed.send(nil)
+          worker_results.send(chunk_error)
         end
       end
 
-      collected_errors = handle_each_errors_safe(errors, completed, chunks.size)
+      collected_errors = [] of Exception
+      chunks.size.times do
+        if error = worker_results.receive
+          collected_errors << error
+        end
+      end
     else
       # Element-wise processing mode
       (0...collection_size).each do |index|
         context.spawn do
+          element_error = nil
           begin
             block.call(index)
-            completed.send(nil)
           rescue ex
-            errors.send(ex)
+            element_error ||= ex
             log_fiber_exception(ex, "index #{index}")
+          ensure
+            worker_results.send(element_error)
           end
         end
       end
 
-      collected_errors = handle_each_errors_safe(errors, completed, collection_size)
+      collected_errors = [] of Exception
+      collection_size.times do
+        if error = worker_results.receive
+          collected_errors << error
+        end
+      end
     end
 
-    # Raise the first error if any occurred (fail-fast behavior)
+    # Raise the first error if any occurred
     unless collected_errors.empty?
       raise collected_errors.first
     end

@@ -5,13 +5,13 @@ module Enumerable(T)
   # Parallel map operation
   # Applies the given block to each element in parallel and returns an array of results
   # Uses lazy evaluation to avoid creating intermediate arrays for memory efficiency
-  # Uses robust error handling internally but maintains fail-fast behavior
+  # Uses robust error handling internally and propagates exceptions
   #
   # ```
   # [1, 2, 3, 4].par_map { |x| x * 2 }           # => [2, 4, 6, 8]
   # [1, 2, 3, 4].par_map(chunk: 2) { |x| x * 2 } # => [2, 4, 6, 8] (same result, fewer context switches)
   # ```
-  def par_map(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
+  def par_map(execution_context : Fiber::ExecutionContext? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
     context = execution_context || Parallel::PARALLEL_CONTEXT
 
     # Unified empty check
@@ -26,13 +26,13 @@ module Enumerable(T)
 
   # Parallel each operation
   # Applies the given block to each element in parallel (no return value)
-  # Uses robust error handling internally but maintains fail-fast behavior
+  # Uses robust error handling internally and propagates exceptions
   #
   # ```
   # [1, 2, 3].par_each { |x| puts x }
   # [1, 2, 3, 4].par_each(chunk: 2) { |x| puts x } # same result, fewer context switches
   # ```
-  def par_each(execution_context : Fiber::ExecutionContext::MultiThreaded? = nil, *, chunk : Int32? = nil, &block : T -> _)
+  def par_each(execution_context : Fiber::ExecutionContext? = nil, *, chunk : Int32? = nil, &block : T -> _)
     context = execution_context || Parallel::PARALLEL_CONTEXT
 
     # Unified empty check

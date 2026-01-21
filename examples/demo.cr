@@ -75,7 +75,7 @@ puts
 
 # Custom ExecutionContext
 puts "7. Custom ExecutionContext:"
-custom_context = Fiber::ExecutionContext::MultiThreaded.new("demo-workers", 2)
+custom_context = Fiber::ExecutionContext::Parallel.new("demo-workers", 2)
 result = [1, 2, 3, 4].par_map(custom_context) { |x| x + 10 }
 puts "Using custom context with 2 workers:"
 puts "Input: [1, 2, 3, 4]"

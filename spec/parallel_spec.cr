@@ -37,7 +37,7 @@ describe Parallel do
     end
 
     it "works with different return types" do
-      result = [1, 2, 3].par_map { |x| x.to_s }
+      result = [1, 2, 3].par_map(&.to_s)
       result.should eq(["1", "2", "3"])
     end
 
@@ -53,9 +53,30 @@ describe Parallel do
     end
 
     it "works with custom ExecutionContext" do
-      custom_context = Fiber::ExecutionContext::MultiThreaded.new("test", 2)
+      custom_context = Fiber::ExecutionContext::Parallel.new("test", 2)
       result = [1, 2, 3, 4].par_map(custom_context) { |x| x * 2 }
       result.should eq([2, 4, 6, 8])
+    end
+
+    it "does not deadlock on exceptions in Indexable par_map" do
+      done = Channel(Nil).new
+
+      spawn do
+        expect_raises(Exception, "boom") do
+          (1..100).to_a.par_map do |x|
+            raise "boom" if x % 10 == 0
+            x
+          end
+        end
+        done.send(nil)
+      end
+
+      select
+      when done.receive
+        # ok
+      when timeout 2.seconds
+        raise "timeout waiting for par_map"
+      end
     end
   end
 
@@ -88,7 +109,7 @@ describe Parallel do
 
     it "handles empty collections" do
       executed = false
-      ([] of Int32).par_each { |x| executed = true }
+      ([] of Int32).par_each { |_| executed = true }
       executed.should be_false
     end
 
@@ -99,6 +120,26 @@ describe Parallel do
             raise "each error"
           end
         end
+      end
+    end
+
+    it "does not deadlock on multiple exceptions in chunked par_each" do
+      done = Channel(Nil).new
+
+      spawn do
+        expect_raises(Exception, "each boom") do
+          (1..50).to_a.par_each(chunk: 5) do |x|
+            raise "each boom" if x % 7 == 0
+          end
+        end
+        done.send(nil)
+      end
+
+      select
+      when done.receive
+        # ok
+      when timeout 2.seconds
+        raise "timeout waiting for par_each"
       end
     end
   end
@@ -124,7 +165,7 @@ describe Parallel do
       # Test with a shared counter to ensure thread safety
       counter = Atomic(Int32).new(0)
 
-      (1..100).par_each do |x|
+      (1..100).par_each do |_|
         counter.add(1)
       end
 
@@ -133,13 +174,13 @@ describe Parallel do
 
     it "works with I/O operations" do
       # Simulate I/O with sleep
-      start_time = Time.monotonic
+      start_time = Time.instant
 
-      [1, 2, 3, 4].par_each do |x|
+      [1, 2, 3, 4].par_each do |_|
         sleep(0.01.seconds) # 10ms per operation
       end
 
-      elapsed = Time.monotonic - start_time
+      elapsed = Time.instant - start_time
       # Should be faster than sequential (4 * 10ms = 40ms)
       # Allow generous margin for CI environments
       elapsed.should be < 100.milliseconds

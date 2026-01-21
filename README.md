@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Crystal 1.6.0+
+- Crystal 1.19.1+
 - Compile flags: `-Dpreview_mt -Dexecution_context`
 
 ## Installation
@@ -39,7 +39,7 @@ require "parallel"
 # => [2, 4, 6, 8] (same result, better performance)
 
 # Custom ExecutionContext
-context = Fiber::ExecutionContext::MultiThreaded.new("workers", 8)
+context = Fiber::ExecutionContext::Parallel.new("workers", 8)
 [1, 2, 3, 4].par_map(context) { |x| x * 2 }
 ```
 
@@ -66,7 +66,8 @@ crystal spec -Dpreview_mt -Dexecution_context
 - Works with any Enumerable (Array, Range, Set, Hash, etc.)
 - Indexable types (Array, Slice) preserve order
 - Exceptions are propagated from parallel tasks
-- Uses global ExecutionContext by default for performance
+- Uses a shared `Fiber::ExecutionContext::Parallel` by default for performance
+- Default worker count is based on `Fiber::ExecutionContext.default_workers_count` (affected by `CRYSTAL_WORKERS` or CPU count)
 - Thread safety is your responsibility when accessing shared resources
 
 ## Contributing
