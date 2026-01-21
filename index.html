@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.15.1">
+<meta name="generator" content="Crystal Docs 1.18.2">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="parallel">
 
@@ -92,7 +92,7 @@
   </svg>
 </a>Requirements</h2>
 <ul>
-<li>Crystal 1.6.0+</li>
+<li>Crystal 1.19.1+</li>
 <li>Compile flags: <code>-Dpreview_mt -Dexecution_context</code></li>
 </ul>
 <h2><a id="installation" class="anchor" href="#installation">
@@ -124,7 +124,7 @@
 <span class="c"># =&gt; [2, 4, 6, 8] (same result, better performance)</span>
 
 <span class="c"># Custom ExecutionContext</span>
-context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">MultiThreaded</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
+context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">Parallel</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
 <h3><a id="compilation" class="anchor" href="#compilation">
   <svg class="octicon-link" aria-hidden="true">
@@ -163,7 +163,8 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <li>Works with any Enumerable (Array, Range, Set, Hash, etc.)</li>
 <li>Indexable types (Array, Slice) preserve order</li>
 <li>Exceptions are propagated from parallel tasks</li>
-<li>Uses global ExecutionContext by default for performance</li>
+<li>Uses a shared <code>Fiber::ExecutionContext::Parallel</code> by default for performance</li>
+<li>Default worker count is based on <code>Fiber::ExecutionContext.default_workers_count</code> (affected by <code>CRYSTAL_WORKERS</code> or CPU count)</li>
 <li>Thread safety is your responsibility when accessing shared resources</li>
 </ul>
 <h2><a id="contributing" class="anchor" href="#contributing">

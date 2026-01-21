@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.15.1">
+<meta name="generator" content="Crystal Docs 1.18.2">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="parallel">
 
@@ -141,7 +141,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/enumerable.cr#L4" target="_blank">
+      <a href="https://github.com/kojix2/parallel/blob/ebcbb04350e3441e422d6bcea9addca3677aaf91/src/parallel/enumerable.cr#L4" target="_blank">
         parallel/enumerable.cr
       </a>
     
@@ -170,16 +170,16 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
+        <a href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method" class="signature"><strong>#par_each</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)</a>
         
-          <div class="summary"><p>Parallel each operation Applies the given block to each element in parallel (no return value) Uses robust error handling internally but maintains fail-fast behavior</p></div>
+          <div class="summary"><p>Parallel each operation Applies the given block to each element in parallel (no return value) Uses robust error handling internally and propagates exceptions</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
+        <a href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method" class="signature"><strong>#par_map</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U</a>
         
-          <div class="summary"><p>Parallel map operation Applies the given block to each element in parallel and returns an array of results Uses lazy evaluation to avoid creating intermediate arrays for memory efficiency Uses robust error handling internally but maintains fail-fast behavior</p></div>
+          <div class="summary"><p>Parallel map operation Applies the given block to each element in parallel and returns an array of results Uses lazy evaluation to avoid creating intermediate arrays for memory efficiency Uses robust error handling internally and propagates exceptions</p></div>
         
       </li>
     
@@ -207,19 +207,19 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;_)-instance-method">
+    <div class="entry-detail" id="par_each(execution_context:Fiber::ExecutionContext|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;_)-instance-method">
       <div class="signature">
         
-        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)
+        def <strong>par_each</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> _)
 
-        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
+        <a class="method-permalink" href="#par_each%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3E_%29-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>Parallel each operation
 Applies the given block to each element in parallel (no return value)
-Uses robust error handling internally but maintains fail-fast behavior</p>
+Uses robust error handling internally and propagates exceptions</p>
 <pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>].par_each { <span class="o">|</span>x<span class="o">|</span> puts x }
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_each(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> puts x } <span class="c"># same result, fewer context switches</span></code></pre>
         </div>
@@ -227,17 +227,17 @@ Uses robust error handling internally but maintains fail-fast behavior</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/enumerable.cr#L35" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/ebcbb04350e3441e422d6bcea9addca3677aaf91/src/parallel/enumerable.cr#L35" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext::MultiThreaded|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
+    <div class="entry-detail" id="par_map(execution_context:Fiber::ExecutionContext|Nil=nil,*,chunk:Int32|Nil=nil,&amp;block:T-&gt;U)forallU-instance-method">
       <div class="signature">
         
-        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext::MultiThreaded | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U
+        def <strong>par_map</strong>(execution_context : Fiber::ExecutionContext | Nil = <span class="n">nil</span>, *, chunk : Int32 | Nil = <span class="n">nil</span>, &block : T -> U) forall U
 
-        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%3A%3AMultiThreaded%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
+        <a class="method-permalink" href="#par_map%28execution_context%3AFiber%3A%3AExecutionContext%7CNil%3Dnil%2C%2A%2Cchunk%3AInt32%7CNil%3Dnil%2C%26block%3AT-%3EU%29forallU-instance-method">#</a>
       </div>
       
         <div class="doc">
@@ -245,7 +245,7 @@ Uses robust error handling internally but maintains fail-fast behavior</p>
           <p>Parallel map operation
 Applies the given block to each element in parallel and returns an array of results
 Uses lazy evaluation to avoid creating intermediate arrays for memory efficiency
-Uses robust error handling internally but maintains fail-fast behavior</p>
+Uses robust error handling internally and propagates exceptions</p>
 <pre><code class="language-crystal">[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }           <span class="c"># =&gt; [2, 4, 6, 8]</span>
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> } <span class="c"># =&gt; [2, 4, 6, 8] (same result, fewer context switches)</span></code></pre>
         </div>
@@ -253,7 +253,7 @@ Uses robust error handling internally but maintains fail-fast behavior</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/parallel/blob/6293d635af5b0fd6ae4a960e807ead20d46404cd/src/parallel/enumerable.cr#L14" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/parallel/blob/ebcbb04350e3441e422d6bcea9addca3677aaf91/src/parallel/enumerable.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>
