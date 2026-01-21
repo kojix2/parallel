@@ -181,6 +181,7 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <li>Exceptions are propagated from parallel tasks</li>
 <li>Uses a shared <code>Fiber::ExecutionContext::Parallel</code> by default for performance (configurable via <code>Parallel.execution_context</code>)</li>
 <li>Default worker count is based on <code>Fiber::ExecutionContext.default_workers_count</code> (affected by <code>CRYSTAL_WORKERS</code> or CPU count)</li>
+<li>Adaptive chunking clamps the computed chunk size between 1 and 1000</li>
 <li>Thread safety is your responsibility when accessing shared resources</li>
 </ul>
 <h2><a id="contributing" class="anchor" href="#contributing">
