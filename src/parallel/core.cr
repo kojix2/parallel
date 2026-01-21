@@ -1,3 +1,5 @@
+require "fiber/execution_context"
+
 # Core module for parallel processing functionality
 module Parallel
   # Determines optimal chunk size for adaptive chunking
@@ -59,7 +61,7 @@ module Parallel
 
   # Common parallel map implementation for Indexable collections
   # This method handles the core logic for Indexable versions using direct index access
-  def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> U) forall U
+  def self.parallel_map_indexable(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> U) forall U
     return [] of U if collection_size == 0
 
     results = Channel(Tuple(Int32, U) | Exception).new
@@ -120,7 +122,7 @@ module Parallel
   # Common parallel map implementation for Enumerable collections using lazy evaluation
   # This method handles the core logic for Enumerable versions without creating intermediate arrays
   # Uses lock-free work-stealing approach for better performance
-  def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
+  def self.parallel_map_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> U) forall T, U
     # Try optimized approaches first, fallback to safe implementation for edge cases
     if enumerable.responds_to?(:size) && enumerable.size > 0
       parallel_map_enumerable_workstealing(enumerable, context, chunk_size, &block)
@@ -130,7 +132,7 @@ module Parallel
   end
 
   # Work-stealing optimized implementation for known-size enumerable (map version)
-  private def self.parallel_map_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
+  private def self.parallel_map_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> U) forall T, U
     # Convert to array with indices first to ensure consistent iteration
     items_with_indices = enumerable.each_with_index.to_a
     return [] of U if items_with_indices.empty?
@@ -208,7 +210,7 @@ module Parallel
   end
 
   # Safe fallback implementation for unknown-size enumerable (map version)
-  private def self.parallel_map_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> U) forall T, U
+  private def self.parallel_map_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> U) forall T, U
     results = Channel(Tuple(Int32, U) | Exception).new
     completed = Channel(Nil).new
 
@@ -296,7 +298,7 @@ module Parallel
   # Lazy parallel each implementation for Enumerable collections
   # This method processes elements without materializing the entire collection
   # Uses lock-free work-stealing approach for better performance
-  def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
+  def self.parallel_each_enumerable(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> _) forall T
     # Try optimized approaches first, fallback to safe implementation for edge cases
     if enumerable.responds_to?(:size) && enumerable.size > 0
       parallel_each_enumerable_workstealing(enumerable, context, chunk_size, &block)
@@ -306,7 +308,7 @@ module Parallel
   end
 
   # Work-stealing optimized implementation for known-size enumerable
-  private def self.parallel_each_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
+  private def self.parallel_each_enumerable_workstealing(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> _) forall T
     # Convert to array first to ensure consistent iteration
     items = enumerable.to_a
     return if items.empty?
@@ -367,7 +369,7 @@ module Parallel
   end
 
   # Safe fallback implementation for unknown-size enumerable
-  private def self.parallel_each_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext, chunk_size : Int32, &block : T -> _) forall T
+  private def self.parallel_each_enumerable_safe(enumerable : Enumerable(T), context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : T -> _) forall T
     worker_results = Channel(Exception?).new
 
     # Use a mutex to synchronize iterator access (fallback for edge cases)
@@ -436,7 +438,7 @@ module Parallel
 
   # Common parallel each implementation
   # This method handles the core logic for both Enumerable and Indexable versions
-  def self.parallel_each(collection_size : Int32, context : Fiber::ExecutionContext, chunk_size : Int32, &block : Int32 -> _)
+  def self.parallel_each(collection_size : Int32, context : Fiber::ExecutionContext::Parallel, chunk_size : Int32, &block : Int32 -> _)
     return if collection_size == 0
 
     worker_results = Channel(Exception?).new

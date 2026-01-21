@@ -41,6 +41,10 @@ require "parallel"
 # Custom ExecutionContext
 context = Fiber::ExecutionContext::Parallel.new("workers", 8)
 [1, 2, 3, 4].par_map(context) { |x| x * 2 }
+
+# Use system default ExecutionContext
+Parallel.execution_context = Fiber::ExecutionContext.default
+[1, 2, 3, 4].par_map { |x| x * 2 }
 ```
 
 ### Compilation
@@ -51,6 +55,13 @@ crystal spec -Dpreview_mt -Dexecution_context
 ```
 
 ## Methods
+
+- execution_context : Fiber::ExecutionContext::Parallel
+  - Returns the library default context.
+
+- execution_context=(context : Fiber::ExecutionContext::Parallel)
+  - Sets the library default context.
+
 
 - par_map(execution_context = nil, \*, chunk = nil, &block)
 
@@ -66,7 +77,7 @@ crystal spec -Dpreview_mt -Dexecution_context
 - Works with any Enumerable (Array, Range, Set, Hash, etc.)
 - Indexable types (Array, Slice) preserve order
 - Exceptions are propagated from parallel tasks
-- Uses a shared `Fiber::ExecutionContext::Parallel` by default for performance
+- Uses a shared `Fiber::ExecutionContext::Parallel` by default for performance (configurable via `Parallel.execution_context`)
 - Default worker count is based on `Fiber::ExecutionContext.default_workers_count` (affected by `CRYSTAL_WORKERS` or CPU count)
 - Thread safety is your responsibility when accessing shared resources
 

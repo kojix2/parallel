@@ -1,3 +1,4 @@
+require "fiber/execution_context"
 require "./core"
 
 # Extension for Enumerable types (Array, Hash, Set, Range, etc.)
@@ -11,8 +12,8 @@ module Enumerable(T)
   # [1, 2, 3, 4].par_map { |x| x * 2 }           # => [2, 4, 6, 8]
   # [1, 2, 3, 4].par_map(chunk: 2) { |x| x * 2 } # => [2, 4, 6, 8] (same result, fewer context switches)
   # ```
-  def par_map(execution_context : Fiber::ExecutionContext? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
-    context = execution_context || Parallel::PARALLEL_CONTEXT
+  def par_map(execution_context : Fiber::ExecutionContext::Parallel? = nil, *, chunk : Int32? = nil, &block : T -> U) forall U
+    context = execution_context || Parallel.execution_context
 
     # Unified empty check
     is_empty, estimated_size = Parallel.check_empty_and_size(self)
@@ -32,8 +33,8 @@ module Enumerable(T)
   # [1, 2, 3].par_each { |x| puts x }
   # [1, 2, 3, 4].par_each(chunk: 2) { |x| puts x } # same result, fewer context switches
   # ```
-  def par_each(execution_context : Fiber::ExecutionContext? = nil, *, chunk : Int32? = nil, &block : T -> _)
-    context = execution_context || Parallel::PARALLEL_CONTEXT
+  def par_each(execution_context : Fiber::ExecutionContext::Parallel? = nil, *, chunk : Int32? = nil, &block : T -> _)
+    context = execution_context || Parallel.execution_context
 
     # Unified empty check
     is_empty, estimated_size = Parallel.check_empty_and_size(self)
