@@ -2,7 +2,8 @@ require "fiber/execution_context"
 
 # Core module for parallel processing functionality
 module Parallel
-  # Determines optimal chunk size for adaptive chunking
+  # Determines optimal chunk size for adaptive chunking.
+  # The computed size is clamped to 1..1000.
   def self.adaptive_chunk_size(collection_size : Int32) : Int32
     return 1 if collection_size == 0
 
