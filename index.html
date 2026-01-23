@@ -125,9 +125,10 @@
 
 <span class="c"># Custom ExecutionContext</span>
 context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">Parallel</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
-[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }
-
-<span class="c"># Use system default ExecutionContext</span>
+[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(context) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
+<p>By default, a dedicated <code>Fiber::ExecutionContext::Parallel</code> is created lazily.
+You may supply your own context if preferred.</p>
+<pre><code class="language-crystal"><span class="c"># Use system default ExecutionContext</span>
 <span class="t">Parallel</span>.execution_context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span>.default
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }</code></pre>
 <h3><a id="compilation" class="anchor" href="#compilation">
@@ -142,6 +143,11 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
     <use href="#octicon-link"/>
   </svg>
 </a>Methods</h2>
+<h3><a id="parallel-global" class="anchor" href="#parallel-global">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Parallel (global)</h3>
 <ul>
 <li>
 <p>execution_context : Fiber::ExecutionContext::Parallel</p>
@@ -155,6 +161,13 @@ crystal spec -Dpreview_mt -Dexecution_context</code></pre>
 <li>Sets the library default context.</li>
 </ul>
 </li>
+</ul>
+<h3><a id="enumerable" class="anchor" href="#enumerable">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Enumerable</h3>
+<ul>
 <li>
 <p>par_map(execution_context = nil, *, chunk = nil, &amp;block)</p>
 <ul>
