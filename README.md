@@ -41,7 +41,12 @@ require "parallel"
 # Custom ExecutionContext
 context = Fiber::ExecutionContext::Parallel.new("workers", 8)
 [1, 2, 3, 4].par_map(context) { |x| x * 2 }
+```
 
+By default, a dedicated `Fiber::ExecutionContext::Parallel` is created lazily.
+You may supply your own context if preferred.
+
+```crystal
 # Use system default ExecutionContext
 Parallel.execution_context = Fiber::ExecutionContext.default
 [1, 2, 3, 4].par_map { |x| x * 2 }
@@ -56,15 +61,17 @@ crystal spec -Dpreview_mt -Dexecution_context
 
 ## Methods
 
+### Parallel (global)
+
 - execution_context : Fiber::ExecutionContext::Parallel
   - Returns the library default context.
 
 - execution_context=(context : Fiber::ExecutionContext::Parallel)
   - Sets the library default context.
 
+### Enumerable
 
 - par_map(execution_context = nil, \*, chunk = nil, &block)
-
   - Applies block to each element in parallel, returns array of results.
   - `chunk`: Process elements in chunks to reduce context switches.
 
