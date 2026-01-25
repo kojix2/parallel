@@ -70,7 +70,7 @@ module Parallel
 
     results = Channel(Tuple(Int32, U) | Exception).new
 
-    if chunk_size > 1 && collection_size > chunk_size
+    if chunk_size > 1
       # Chunk processing mode
       chunks = (0...collection_size).each_slice(chunk_size).with_index.to_a
 
@@ -429,7 +429,7 @@ module Parallel
 
     worker_results = Channel(Exception?).new
 
-    if chunk_size > 1 && collection_size > chunk_size
+    if chunk_size > 1
       # Chunk processing mode
       chunks = (0...collection_size).each_slice(chunk_size).to_a
 
