@@ -36,22 +36,22 @@ puts
 # Performance comparison
 puts "5. Performance comparison (I/O simulation):"
 puts "Sequential processing:"
-start_time = Time.monotonic
+start_time = Time.instant
 sequential_result = [1, 2, 3, 4].map do |x|
   sleep(0.1.seconds) # Simulate I/O
   x * 2
 end
-sequential_time = Time.monotonic - start_time
+sequential_time = Time.instant.duration_since(start_time)
 puts "Result: #{sequential_result}"
 puts "Time: #{sequential_time.total_milliseconds.round(2)}ms"
 
 puts "\nParallel processing:"
-start_time = Time.monotonic
+start_time = Time.instant
 parallel_result = [1, 2, 3, 4].par_map do |x|
   sleep(0.1.seconds) # Simulate I/O
   x * 2
 end
-parallel_time = Time.monotonic - start_time
+parallel_time = Time.instant.duration_since(start_time)
 puts "Result: #{parallel_result}"
 puts "Time: #{parallel_time.total_milliseconds.round(2)}ms"
 
@@ -85,9 +85,9 @@ puts
 # Large dataset test
 puts "8. Large dataset test:"
 large_array = (1..1000).to_a
-start_time = Time.monotonic
+start_time = Time.instant
 result = large_array.par_map { |x| Math.sqrt(x).round(2) }
-elapsed = Time.monotonic - start_time
+elapsed = Time.instant.duration_since(start_time)
 
 puts "Processed #{large_array.size} elements"
 puts "First 10 results: #{result[0..9]}"
@@ -97,14 +97,14 @@ puts
 # Chunk processing test
 puts "9. Chunk processing (fewer context switches):"
 puts "Normal processing:"
-start_time = Time.monotonic
+start_time = Time.instant
 normal_result = (1..100).par_map { |x| x * x }
-normal_time = Time.monotonic - start_time
+normal_time = Time.instant.duration_since(start_time)
 
 puts "Chunk processing (chunk: 10):"
-start_time = Time.monotonic
+start_time = Time.instant
 chunk_result = (1..100).par_map(chunk: 10) { |x| x * x }
-chunk_time = Time.monotonic - start_time
+chunk_time = Time.instant.duration_since(start_time)
 
 puts "Normal result == Chunk result: #{normal_result == chunk_result}"
 puts "Normal time: #{normal_time.total_milliseconds.round(2)}ms"
