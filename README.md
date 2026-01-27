@@ -36,7 +36,7 @@ require "parallel"
 
 # Chunk processing (fewer context switches)
 [1, 2, 3, 4].par_map(chunk: 2) { |x| x * 2 }
-# => [2, 4, 6, 8] (same result, better performance)
+# => [2, 4, 6, 8] (same result, fewer context switches)
 
 # Custom ExecutionContext
 context = Fiber::ExecutionContext::Parallel.new("workers", 8)
