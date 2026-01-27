@@ -121,7 +121,7 @@
 
 <span class="c"># Chunk processing (fewer context switches)</span>
 [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].par_map(chunk: <span class="n">2</span>) { <span class="o">|</span>x<span class="o">|</span> x <span class="o">*</span> <span class="n">2</span> }
-<span class="c"># =&gt; [2, 4, 6, 8] (same result, better performance)</span>
+<span class="c"># =&gt; [2, 4, 6, 8] (same result, fewer context switches)</span>
 
 <span class="c"># Custom ExecutionContext</span>
 context <span class="o">=</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">ExecutionContext</span><span class="t">::</span><span class="t">Parallel</span>.new(<span class="s">&quot;workers&quot;</span>, <span class="n">8</span>)
