@@ -17,10 +17,10 @@ module Enumerable(T)
 
     # Unified empty check
     is_empty, estimated_size = Parallel.check_empty_and_size(self)
-    return [] of U if is_empty
 
     # Validate and normalize chunk size
     chunk_size = Parallel.validate_chunk_size(chunk, estimated_size)
+    return [] of U if is_empty
 
     Parallel.parallel_map_enumerable(self, context, chunk_size, &block)
   end
@@ -38,10 +38,10 @@ module Enumerable(T)
 
     # Unified empty check
     is_empty, estimated_size = Parallel.check_empty_and_size(self)
-    return if is_empty
 
     # Validate and normalize chunk size
     chunk_size = Parallel.validate_chunk_size(chunk, estimated_size)
+    return if is_empty
 
     # Use lazy evaluation to avoid materializing the entire collection
     Parallel.parallel_each_enumerable(self, context, chunk_size, &block)

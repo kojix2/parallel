@@ -3,7 +3,7 @@ name: test
 on:
   push:
   pull_request:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   test:
@@ -27,4 +27,7 @@ jobs:
           crystal run examples/demo.cr -Dpreview_mt -Dexecution_context
           crystal run examples/benchmark.cr -Dpreview_mt -Dexecution_context
       - name: Run tests
-        run: crystal spec -Dpreview_mt -Dexecution_context
+        run: |
+          crystal spec -Dpreview_mt -Dexecution_context > spec.log 2> spec.err
+          cat spec.err
+          cat spec.log

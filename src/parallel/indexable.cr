@@ -16,10 +16,10 @@ module Indexable(T)
 
     # Unified empty check
     is_empty, collection_size = Parallel.check_empty_and_size(self)
-    return [] of U if is_empty
 
     # Validate and normalize chunk size
     chunk_size = Parallel.validate_chunk_size(chunk, collection_size)
+    return [] of U if is_empty
 
     Parallel.parallel_map_indexable(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))
@@ -38,10 +38,10 @@ module Indexable(T)
 
     # Unified empty check
     is_empty, collection_size = Parallel.check_empty_and_size(self)
-    return if is_empty
 
     # Validate and normalize chunk size
     chunk_size = Parallel.validate_chunk_size(chunk, collection_size)
+    return if is_empty
 
     Parallel.parallel_each(collection_size, context, chunk_size) do |index|
       block.call(unsafe_fetch(index))

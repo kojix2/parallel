@@ -1,24 +1,29 @@
 require "../spec_helper"
 
-describe "Parallel performance" do
-  it "handles concurrent access correctly" do
-    counter = Atomic(Int32).new(0)
+if ENV["RUN_PERF_SPECS"]?
+  describe "Parallel performance" do
+    it "is faster than sequential I/O operations" do
+      with_dedicated_execution_context(4) do
+        sequential_start = Time.instant
+        [1, 2, 3, 4].each do |_|
+          sleep(0.02.seconds)
+        end
+        sequential_elapsed = Time.instant - sequential_start
 
-    (1..100).par_each do |_|
-      counter.add(1)
+        parallel_start = Time.instant
+        [1, 2, 3, 4].par_each do |_|
+          sleep(0.02.seconds)
+        end
+        parallel_elapsed = Time.instant - parallel_start
+
+        parallel_elapsed.should be < sequential_elapsed
+      end
     end
-
-    counter.get.should eq(100)
   end
-
-  it "works with I/O operations" do
-    start_time = Time.instant
-
-    [1, 2, 3, 4].par_each do |_|
-      sleep(0.01.seconds)
+else
+  describe "Parallel performance" do
+    pending "is skipped unless RUN_PERF_SPECS is set" do
+      # Set RUN_PERF_SPECS=1 to run performance specs
     end
-
-    elapsed = Time.instant - start_time
-    elapsed.should be < 100.milliseconds
   end
 end

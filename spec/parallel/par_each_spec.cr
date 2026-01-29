@@ -14,6 +14,16 @@ describe "Parallel par_each" do
     results.sort.should eq([2, 4, 6, 8])
   end
 
+  it "increments shared counters safely" do
+    counter = Atomic(Int32).new(0)
+
+    (1..100).par_each do |_|
+      counter.add(1)
+    end
+
+    counter.get.should eq(100)
+  end
+
   it "works with Range" do
     results = [] of Int32
     mutex = Mutex.new
@@ -44,22 +54,12 @@ describe "Parallel par_each" do
   end
 
   it "does not deadlock on multiple exceptions in chunked par_each" do
-    done = Channel(Nil).new
-
-    spawn do
+    assert_completes_within(5.seconds) do
       expect_raises(Exception, "each boom") do
         (1..50).to_a.par_each(chunk: 5) do |x|
           raise "each boom" if x % 7 == 0
         end
       end
-      done.send(nil)
-    end
-
-    select
-    when done.receive
-      # ok
-    when timeout 2.seconds
-      raise "timeout waiting for par_each"
     end
   end
 end

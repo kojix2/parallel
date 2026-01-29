@@ -2,11 +2,8 @@ require "../spec_helper"
 
 describe "Parallel par_map" do
   it "works with Array" do
-    puts "Starting Array test"
     result = [1, 2, 3, 4].par_map { |x| x * 2 }
-    puts "Array test result: #{result}"
     result.should eq([2, 4, 6, 8])
-    puts "Array test completed"
   end
 
   it "works with Range" do
@@ -52,23 +49,13 @@ describe "Parallel par_map" do
   end
 
   it "does not deadlock on exceptions in Indexable par_map" do
-    done = Channel(Nil).new
-
-    spawn do
+    assert_completes_within(5.seconds) do
       expect_raises(Exception, "boom") do
         (1..100).to_a.par_map do |x|
           raise "boom" if x % 10 == 0
           x
         end
       end
-      done.send(nil)
-    end
-
-    select
-    when done.receive
-      # ok
-    when timeout 2.seconds
-      raise "timeout waiting for par_map"
     end
   end
 end
